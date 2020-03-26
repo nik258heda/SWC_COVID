@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Requests List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+</head>
+<body>
+    {% if request_list %}
+        <table id="example" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th class="dropdown">Category</th>
+                    <th>User Remarks</th>
+                    <th>Requested On</th>
+                    <th>Urgency</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for request in request_list %}
+                <tr>
+                    <td>{{ request.requested_by }}</td>
+                    <td>{{ request.category.category_name }}</td>
+                    <td>{{ request.user_remarks }}</td>
+                    <td>{{ request.requested_on }}</td>
+                    <td>{{ request.urgency_rating }}</td>
+                    <td>{{ request.status_completed }}</td>
+                </tr>
+
+            {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Name</th>
+                    <th class="dropdown">Category</th>
+                    <th>User Remarks</th>
+                    <th>Requested On</th>
+                    <th>Urgency</th>
+                    <th>Status</th>
+                </tr>
+            </tfoot>
+        </table>
+    {% else %}
+        <h1>No Pending Requests</h1>
+    {% endif %}
+
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        } );
+    </script>
+</body>
+</html>
