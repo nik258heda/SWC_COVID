@@ -27,7 +27,7 @@
                     <td>{{ request.user_remarks }}</td>
                     <td>{{ request.requested_on }}</td>
                     <td>{{ request.urgency_rating }}</td>
-                    <td>{{ request.status_completed }}</td>
+                    <td>{% if request.status_completed %}Completed{% else %}Pending&nbsp;<a class="btn btn-primary text-white btn-approve" type="button" data-request="{{ request.pk }}">Approve</a>{% endif %}</td>
                 </tr>
 
             {% endfor %}
@@ -52,7 +52,27 @@
     <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
     <script>
         $(document).ready(function() {
+            console.log("HEHE");
             $('#example').DataTable();
+            $('.btn-approve').click(function (e) {
+                var pk = $(this).attr('data-request');
+                var par = $(this).parent();
+                $.ajax({
+                    url: '{% url 'admin_panel:approve-request' %}',
+                    data: {
+                        'pk': pk
+                    },
+                    success: function (data) {
+                        if(data.approved) {
+                            par.html('Completed');
+                        } else {
+                            console.log(data);
+                        }
+                    }, error: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
         } );
     </script>
 </body>
