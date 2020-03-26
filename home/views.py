@@ -1,5 +1,10 @@
 from django.shortcuts import render, redirect
 
-def index(request):
 
+def index(request): 
 	return render(request, "home/index.html")
+
+
+
+
+
