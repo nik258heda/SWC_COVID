@@ -14,16 +14,17 @@ class Request(models.Model):
 
     #requestor details
     requestor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='requests')
-    location = models.PointField(srid=4326,geography=True)
-    address = models.CharField(max_length=100, default='')
-    city = models.CharField(max_length=50, default='')
-    state = models.CharField(max_length=50, default='')
+    location = models.PointField(srid=4326,geography=True,null=True)
+    address = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=50, blank=True)
+    state = models.CharField(max_length=50, blank=True)
 
     #request details
     requirement = models.CharField(max_length=100)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='requests')
     urgency_rating = models.FloatField(default=5, validators=[MinValueValidator(1), MaxValueValidator(10)])
-    created = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+    address_allowed = models.BooleanField(default=True)
 
     #remarks
     user_remarks = models.TextField(max_length=1024, blank=True)

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Request Form</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
+      integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+      crossorigin="anonymous">
+  </head>
+  <body>
+
+    <div class="container">
+      <div class="jumbotron">
+
+        <form action="{% url 'home:postForm' %}" method="post">
+          {% csrf_token %}
+          {{ add_request_form|crispy }}
+          <input type="submit" class="btn btn-primary" name="" value="Make Request">
+        </form>
+
+      </div>
+
+    </div>
+
+
+  </body>
+</html>

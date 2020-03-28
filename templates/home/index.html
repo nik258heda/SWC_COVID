@@ -25,7 +25,7 @@
   <div class="jumbotron">
 
     {% if user.is_authenticated %}
-    <p style="display:none" id = "status"></p>
+    <p id = "status"></p>
 
     <h1>Dashboard</h1>
 
@@ -43,6 +43,12 @@
       &nbsp;
       {% if not user.profile %}
       <a class="btn btn-primary" href="{% url 'auths:profileCollection' %}">Add Phone Number</a>
+      {% endif %}
+      <br> <br>
+      {% if messages %}
+      <a class="btn btn-primary" href="{% url 'home:postForm' %}">Add Request</a>
+      {% else %}
+      <p>Your current location has not been calculated yet. Please wait for it in order to post.</p>
       {% endif %}
     {% else %}
       <a class="btn btn-danger" href="{% url 'auths:social:begin' 'google-oauth2' %}">
