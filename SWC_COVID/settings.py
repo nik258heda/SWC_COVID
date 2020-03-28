@@ -14,7 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.gis',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,7 +59,7 @@ ROOT_URLCONF = 'SWC_COVID.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATE_DIR,],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,8 +80,12 @@ WSGI_APPLICATION = 'SWC_COVID.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'gis',
+        'USER': 'user001',
+        'PASSWORD': '123456789',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
 
@@ -134,5 +139,4 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'XUYUAD1IBf_4E1Eih26X5DTR'
 LOGIN_URL = '/auth/login/google-oauth2/'
 SOCIAL_AUTH_URL_NAMESPACE = 'auths:social'
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'  
-
+LOGOUT_REDIRECT_URL = '/'

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Dashboard</title>
+
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
+    integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+    crossorigin="anonymous">
+</head>
+{% if not messages %}
+<body onload="geoFindMe()">
+{% else %}
+<body>
+{% endif %}
+
+
+
+
+
+
+  <div class="jumbotron">
+
+    {% if user.is_authenticated %}
+    <p style="display:none" id = "status"></p>
+
+    <h1>Dashboard</h1>
+
+
+    <a style="display:none" id = "map-link" target="_blank"></a>
+    <form style="display:none" action="{% url 'home:home' %}" method="post">
+      {% csrf_token %}
+      <input id="latitude" type="text" name="latitude" value="">
+      <input id="longitude" type="text" name="longitude" value="">
+      <input id="latLonSubmit" type="submit" name="coordinatesSubmitted" value="">
+    </form>
+
+      <p>Logged as {{ user.username }}</p>
+      <a class="btn btn-secondary" href="{% url 'auths:logout' %}">Logout</a>
+      &nbsp;
+      {% if not user.profile %}
+      <a class="btn btn-primary" href="{% url 'auths:profileCollection' %}">Add Phone Number</a>
+      {% endif %}
+    {% else %}
+      <a class="btn btn-danger" href="{% url 'auths:social:begin' 'google-oauth2' %}">
+        Login with Google
+      </a>
+      &nbsp;
+      <a class="btn btn-primary" href="{% url 'auths:login'%}">
+        Login
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="container-fluid">
+  {% for post in posts %}
+    <div>
+      <h2>{{ post.title }}</h2>
+      <p>{{ post.content }}</p>
+      <p>Posted by {{ post.user.username }} | {{ post.date }}</p>
+    </div>
+  {% endfor %}
+  </div>
+
+
+  <script type="text/javascript">
+    function geoFindMe() {
+
+      const status = document.querySelector('#status');
+      const mapLink = document.querySelector('#map-link');
+      const latLink = document.getElementById('latitude')
+      const lonLink = document.getElementById('longitude')
+      const submitCoor = document.getElementById('latLonSubmit')
+
+      mapLink.href = '';
+      mapLink.textContent = '';
+
+      function success(position) {
+        const latitude  = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        status.textContent = '';
+        mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
+        mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
+
+        lonLink.value = longitude
+        latLink.value = latitude
+        submitCoor.click()
+
+
+      }
+
+      function error() {
+        status.textContent = 'Unable to retrieve your location';
+      }
+
+      if (!navigator.geolocation) {
+        status.textContent = 'Geolocation is not supported by your browser';
+      } else {
+        status.textContent = 'Locating…';
+        navigator.geolocation.getCurrentPosition(success, error);
+      }
+
+    }
+
+
+  </script>
+
+</body>
+</html>

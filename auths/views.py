@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from auths.forms import SignUpForm, ProfileCollectionForm
 
-    
+
 def register(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -13,7 +13,7 @@ def register(request):
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
-            if user.is_authenticated:     
+            if user.is_authenticated:
                 login(request, user)
             # return redirect('home:home')
             return redirect('auths:profileCollection')
