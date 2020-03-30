@@ -85,19 +85,32 @@
 
       {% for post in queryset %}
         <div class="jumbotron">
-          <h4>Requestor: {{ post.requestor.username }}</h4>
-          <p><b>Requirement:</b> {{ post.requirement }}</p>
-          <p><b>Category:</b> {{ post.category }}</p>
-          <p><b>Address:</b> {{ post.address }}</p>
-          <p><b>City:</b> {{ post.city }}</p>
-          <p><b>State:</b> {{ post.state }}</p>
-          {% if post.user_remarks %}
-          <p><b>Remarks: </b>{{ post.user_remarks }}</p>
+
+          <h4>Requestor: {{ post.request.requestor.username }}</h4>
+          <p><b>Requirement:</b> {{ post.request.requirement }}</p>
+          <p><b>Category:</b> {{ post.request.category }}</p>
+          <p><b>Address:</b> {{ post.request.address }}</p>
+          <p><b>City:</b> {{ post.request.city }}</p>
+          <p><b>State:</b> {{ post.request.state }}</p>
+          {% if post.request.user_remarks %}
+          <p><b>Remarks: </b>{{ post.request.user_remarks }}</p>
           {% endif %}
-          <p><b>Request made on: </b>{{ post.created }}</p>
+          <p><b>Request made on: </b>{{ post.request.created }}</p>
+          <p><b>Urgency Rating: </b>{{ post.request.urgency_rating.count }}</p>
+
+          <form action="{% url 'home:home' %}" method="post">
+            {% csrf_token %}
+            {% if post.liked %}
+            <button class="btn btn-danger" type="submit" name="postToLike" value="{{ post.request.requestor.username }} {{ post.request.timestamp_for_id }}">Remove Urgency</button>
+            {% else %}
+            <button class="btn btn-primary" type="submit" name="postToLike" value="{{ post.request.requestor.username }} {{ post.request.timestamp_for_id }}">Add Urgency</button>
+            {% endif %}
+          </form>
+          <br><br>
+
           <form class="" action="{% url 'home:home' %}" method="post">
             {% csrf_token %}
-            <input style="display:none" type="text" name="postToDelete" value="{{ post.requestor.username }} {{ post.timestamp_for_id }}">
+            <input style="display:none" type="text" name="postToDelete" value="{{ post.request.requestor.username }} {{ post.request.timestamp_for_id }}">
             <input type="submit" name="deletePost" value="Delete Request">
             <br>
             <p>Delete if request has been satisfied</p>

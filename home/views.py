@@ -21,6 +21,15 @@ latitude = 0
 longitude = 0
 
 
+class PostToPass():
+	request = Request()
+	liked = False
+
+	def __init__(self, a, b):
+		self.request = a
+		self.liked = b
+
+
 user_location = Point()
 
 def home(request):
@@ -54,8 +63,28 @@ def home(request):
 				print('POST TO BE DELETED: ', postToDelete)
 				Request.objects.filter(requestor__username=postToDelete[0], timestamp_for_id=int(postToDelete[1])).delete()
 				return HttpResponseRedirect(reverse('home:home'))
+			elif 'postToLike' in request.POST:
+				postToLike = request.POST['postToLike'].split()
+				print("POST TO LIKE", postToLike)
+				req = Request.objects.get(requestor__username=postToLike[0], timestamp_for_id=int(postToLike[1]))
+				if req.urgency_rating.filter(id=request.user.id).exists():
+					Request.objects.get(requestor__username=postToLike[0], timestamp_for_id=int(postToLike[1])).urgency_rating.remove(request.user)
+				else:
+					Request.objects.get(requestor__username=postToLike[0], timestamp_for_id=int(postToLike[1])).urgency_rating.add(request.user)
 
-		queryset = Request.objects.filter(requestor=request.user).order_by('created');
+
+
+				return HttpResponseRedirect(reverse('home:home'))
+
+		queryse = Request.objects.filter(requestor=request.user).order_by('created');
+		queryset = []
+		for query in queryse:
+			print("QUERY", type(query))
+			if query.urgency_rating.filter(id=request.user.id).exists():
+				queryset.append(PostToPass(query, True))
+			else:
+				queryset.append(PostToPass(query, False))
+
 		print("Queries: ", queryset)
 
 		return render(request, "home/index.html", {'latitude': latitude, 'longitude': longitude, 'queryset': queryset})

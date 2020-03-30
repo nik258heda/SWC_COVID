@@ -22,7 +22,7 @@ class Request(models.Model):
     #request details
     requirement = models.CharField(max_length=100)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='requests')
-    urgency_rating = models.FloatField(default=5, validators=[MinValueValidator(1), MaxValueValidator(10)])
+    urgency_rating = models.ManyToManyField(User, blank=True, related_name="post_urgency")
     created = models.DateTimeField(auto_now_add=True)
     address_allowed = models.BooleanField(default=True)
 

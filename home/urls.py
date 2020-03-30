@@ -6,6 +6,7 @@ app_name = 'home'
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('postForm', views.postForm, name='postForm')
+    path('postForm', views.postForm, name='postForm'),
+
 
 ]
