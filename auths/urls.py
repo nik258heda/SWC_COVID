@@ -13,6 +13,8 @@ urlpatterns = [
 	path('register/', auths_views.register, name='register'),
     path('login/', auth_views.LoginView.as_view(template_name="auths/login.html"), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name="auths/logout.html"), name='logout'),
-    path('addincol/', auths_views.profileCollectionView, name='profileCollection'),
+    path('phoneverify/', auths_views.phoneVerificationView, name='phoneVerification'),
+    path('tokenvalidation/', auths_views.tokenValidation, name='tokenValidation'),
+    path('phoneverified/', auths_views.phoneVerified, name='phoneVerified'),
 ]
 

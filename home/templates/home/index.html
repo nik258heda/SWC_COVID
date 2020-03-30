@@ -19,7 +19,7 @@
       <a class="btn btn-secondary" href="{% url 'auths:logout' %}">Logout</a>
       &nbsp;
       {% if not user.profile %}
-      <a class="btn btn-primary" href="{% url 'auths:profileCollection' %}">Add Phone Number</a>
+      <a class="btn btn-primary" href="{% url 'auths:phoneVerification' %}">Add Phone Number</a>
       {% endif %}
     {% else %}
       <a class="btn btn-danger" href="{% url 'auths:social:begin' 'google-oauth2' %}">
