@@ -15,53 +15,52 @@ import json
 from django.http import HttpResponse, JsonResponse
 from admin_panel.models import Request, Category
 from .forms import AddRequestForm
+import time
+
+latitude = 0
+longitude = 0
+
 
 user_location = Point()
 
 def home(request):
-	queryset={}
 
 
-	if request.POST:
-		print(request.POST)
 
-		if('coordinatesSubmitted' in request.POST):
-			messages.success(request, 'Your coordinate has been saved')
-			latitude = float(request.POST['latitude'])
-			longitude = float(request.POST['longitude'])
-			print('LATITUDE: {}, LONGITUDE: {}'.format(latitude, longitude))
-			global user_location
-			user_location = Point(longitude, latitude, srid=4326)
-			print(user_location)
-			return HttpResponseRedirect(reverse('home:home'))
-	# if request.POST:
-	# 	print(request.POST)
-	#
-	# 	if('coordinatesSubmitted' in request.POST):
-	# 	    messages.success(request, "Your coordinate has been saved!")
-	# 	    latitude = float(request.POST['latitude'])
-	# 	    longitude = float(request.POST['longitude'])
-	# 	    print('LATITUDE: {}, LONGITUDE: {}'.format(latitude, longitude))
-	# 	# 	user_location = Point(longitude, latitude, srid=4326)
-	# 	# #
-	# 	#     queryset = Request.objects.filter(location__distance_lte=(user_location, D(km=115)))
-	# 	#     # queryset = Request.objects.all()
-	# 	#
-	# 	#     print(user_location)
-	# 	#     print(len(queryset))
-	# 	# #
-	# 	#     coin_amount = [key.requestor for key in queryset]
-	#
-	# 	    # request.session['requests'] = coin_amount
-	#
-	# 		return HttpResponseRedirect(reverse('home:home'))
-	# 	    # return JsonResponse({'requests':coin_amount})
-	# 	else:
-	# 	    return HttpResponseRedirect(reverse('home:home'))
-	else:
-		storage = messages.get_messages(request)
-		storage.used = True
-		return render(request, "home/index.html")
+	if request.user.is_authenticated:
+		if request.POST:
+			print(request.POST)
+
+			if('coordinatesSubmitted' in request.POST):
+
+				global latitude
+				latitude = float(request.POST['latitude'])
+				global longitude
+				longitude = float(request.POST['longitude'])
+				print('LATITUDE: {}, LONGITUDE: {}'.format(latitude, longitude))
+				global user_location
+				user_location = Point(longitude, latitude, srid=4326)
+				print(user_location)
+
+				return HttpResponseRedirect(reverse('home:home'))
+			elif 'refreshLocation' in request.POST:
+
+				longitude = 0
+
+				latitude = 0
+				return HttpResponseRedirect(reverse('home:home'))
+			elif 'deletePost' in request.POST:
+				postToDelete = request.POST['postToDelete'].split()
+				print('POST TO BE DELETED: ', postToDelete)
+				Request.objects.filter(requestor__username=postToDelete[0], timestamp_for_id=int(postToDelete[1])).delete()
+				return HttpResponseRedirect(reverse('home:home'))
+
+		queryset = Request.objects.filter(requestor=request.user).order_by('created');
+		print("Queries: ", queryset)
+
+		return render(request, "home/index.html", {'latitude': latitude, 'longitude': longitude, 'queryset': queryset})
+
+	return render(request, "home/index.html")
 
 def postForm(request):
 	if request.user.is_authenticated:
@@ -74,7 +73,8 @@ def postForm(request):
 				global user_location
 				if user_location:
 					requestt.location = user_location
-				print("RECK: ", requestt.location)
+				requestt.timestamp_for_id = int(round(time.time() * 1000))
+				print("RECK: ", requestt)
 				requestt.save()
 
 

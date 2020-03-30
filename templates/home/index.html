@@ -7,28 +7,49 @@
 
   <link
     rel="stylesheet"
-    href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
-    integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
-    crossorigin="anonymous">
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
+
+    <style media="screen">
+
+
+    </style>
+
+
 </head>
-{% if not messages %}
+
+{% if latitude == 0 and longitude == 0 %}
+{% if user.is_authenticated %}
 <body onload="geoFindMe()">
+{% endif %}
 {% else %}
 <body>
 {% endif %}
 
 
 
+  <div class="container">
 
 
 
-  <div class="jumbotron">
+
+  <div class="jumbotron text-center">
 
     {% if user.is_authenticated %}
+    <nav style="background-color:#05386B;" class="navbar navbar-default navbar-fixed-top">
+
+      <div class="container">
+        <ul class="nav navbar-nav">
+          <li><a style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-brand" href="{% url 'home:home' %}">Your Requests</a></li>
+          <li><a style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="">Nearby Requests</a></li>
+          <li><a style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'auths:logout' %}">Logout</a></li>
+        </ul>
+      </div>
+
+    </nav>
+    <br>
     <p id = "status"></p>
 
     <h1>Dashboard</h1>
-
 
     <a style="display:none" id = "map-link" target="_blank"></a>
     <form style="display:none" action="{% url 'home:home' %}" method="post">
@@ -39,17 +60,56 @@
     </form>
 
       <p>Logged as {{ user.username }}</p>
-      <a class="btn btn-secondary" href="{% url 'auths:logout' %}">Logout</a>
+
       &nbsp;
       {% if not user.profile %}
       <a class="btn btn-primary" href="{% url 'auths:profileCollection' %}">Add Phone Number</a>
       {% endif %}
       <br> <br>
-      {% if messages %}
+      {% if latitude != 0 or longitude != 0  %}
       <a class="btn btn-primary" href="{% url 'home:postForm' %}">Add Request</a>
       {% else %}
       <p>Your current location has not been calculated yet. Please wait for it in order to post.</p>
       {% endif %}
+      <br><br>
+      <form class="" action="{% url 'home:home' %}" method="post">
+        {% csrf_token %}
+        <input type="submit" name="refreshLocation" value="Refresh Current Location">
+      </form>
+    </div>
+    <h2>Your Requests: </h2>
+
+    {% if queryset %}
+
+    <div class="container-fluid">
+
+      {% for post in queryset %}
+        <div class="jumbotron">
+          <h4>Requestor: {{ post.requestor.username }}</h4>
+          <p><b>Requirement:</b> {{ post.requirement }}</p>
+          <p><b>Category:</b> {{ post.category }}</p>
+          <p><b>Address:</b> {{ post.address }}</p>
+          <p><b>City:</b> {{ post.city }}</p>
+          <p><b>State:</b> {{ post.state }}</p>
+          {% if post.user_remarks %}
+          <p><b>Remarks: </b>{{ post.user_remarks }}</p>
+          {% endif %}
+          <p><b>Request made on: </b>{{ post.created }}</p>
+          <form class="" action="{% url 'home:home' %}" method="post">
+            {% csrf_token %}
+            <input style="display:none" type="text" name="postToDelete" value="{{ post.requestor.username }} {{ post.timestamp_for_id }}">
+            <input type="submit" name="deletePost" value="Delete Request">
+            <br>
+            <p>Delete if request has been satisfied</p>
+          </form>
+        </div>
+      {% endfor %}
+
+    </div>
+    {% else %}
+    <br>
+    <h4>No Requests Yet</h4>
+    {%endif%}
     {% else %}
       <a class="btn btn-danger" href="{% url 'auths:social:begin' 'google-oauth2' %}">
         Login with Google
@@ -61,15 +121,10 @@
     {% endif %}
   </div>
 
-  <div class="container-fluid">
-  {% for post in posts %}
-    <div>
-      <h2>{{ post.title }}</h2>
-      <p>{{ post.content }}</p>
-      <p>Posted by {{ post.user.username }} | {{ post.date }}</p>
-    </div>
-  {% endfor %}
-  </div>
+
+
+</div>
+
 
 
   <script type="text/javascript">
