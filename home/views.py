@@ -16,6 +16,7 @@ from django.http import HttpResponse, JsonResponse
 from admin_panel.models import Request, Category, Comment
 from .forms import AddRequestForm, CommentForm
 import time
+from django.db.models import Count
 
 latitude = 0
 longitude = 0
@@ -149,7 +150,7 @@ def mainPage(request):
 
 				return HttpResponseRedirect(reverse('home:main_page'))
 
-		queryse = Request.objects.filter(location__distance_lte=(user_location, D(km=115))).annotate(distance=Distance('location',user_location)).order_by('distance')
+		queryse = Request.objects.filter(location__distance_lte=(user_location, D(km=3))).annotate(distance=Distance('location',user_location), q_count=Count('urgency_rating')).order_by('distance', '-q_count', '-id')
 
 		queryset=[]
 

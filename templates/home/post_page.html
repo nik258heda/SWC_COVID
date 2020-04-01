@@ -7,10 +7,15 @@
 
 
 
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=<div>, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
       <style media="screen">
 
         hr {
@@ -22,6 +27,42 @@
         height: 5px;
       }
 
+      input[type=text]{
+
+        width:100%
+
+      }
+
+      #post{
+    width:80%;
+    margin-left:auto;
+    margin-right: auto;
+    border:1.5px solid grey;
+    margin-top: 25px;
+}
+.dot {
+    height: 25px;
+    width: 25px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+}
+input[type="submit"]:not(#excluded){
+    width:50%;
+    border-radius: 25px;
+    background-color:#7A7A7A;
+    border:1px solid #9C9C9C;
+    height: 45px;
+    color: white;
+    font-size: 20px;
+}
+input:focus, text{
+    outline: none !important;
+}
+input[type="submit"]:hover{
+    opacity:0.8;
+}
+
       </style>
 
 
@@ -31,51 +72,66 @@
   <body>
 
 
-    <nav style="background-color:#05386B;" class="navbar navbar-default navbar-fixed-top">
+    <nav style="background-color:#05386B;" class="navbar navbar-expand-md navbar-dark sticky-top">
 
-      <div class="container">
+      <button class="navbar-toggler" data-toggle="collapse" data-target="#collapse_target">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="collapse_target">
+
+
+
+
         <ul class="nav navbar-nav">
-          <li><a style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-brand" href="{% url 'home:home' %}">Your Requests</a></li>
-          <li><a style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'home:main_page' %}">Nearby Requests</a></li>
-          <li><a style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'auths:logout' %}">Logout</a></li>
+          <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-brand" href="{% url 'home:home' %}">Your Requests</a></li>
+          <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'home:main_page' %}">Nearby Requests</a></li>
+          <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'auths:logout' %}">Logout</a></li>
         </ul>
-      </div>
 
+
+    </div>
     </nav>
 
-    <br><br>
 
-    <br><br>
+    <br>
 
     <div class="container">
 
-      <div style="padding: 15px;" class="jumbotron">
+      <div style="padding: 15px;border:1px solid black;border-radius:0px;background:none;" class="jumbotron">
 
-        <p style="float: left;"><b>Requirement: </b>{{ postToShow.request.requirement }} </p>
-        <p style="float: right;"><b>Category: </b>{{ postToShow.request.category }} </p>
-        <br style="clear:both" />
-        <p style="float: left;"><b>Requestor: </b>{{ postToShow.request.requestor.username }}</p>
-        <p style="float:right"><b>Address: </b>{{ postToShow.request.address }}</p>
-        <br style="clear:both" />
-        <p style="float:right"><b>City: </b>{{ postToShow.request.city }}</p>
-        <br style="clear:both" />
-        <p style="float:right"><b>State: </b>{{ postToShow.request.state }}</p>
-        {% if postToShow.request.user_remarks %}
-          <br style="clear:both" />
-          <p><b>User remarks: </b>{{ postToShow.request.user_remarks }}</p>
+
+        {% if postToShow.request.urgency_rating.count >= 10 %}
+      <div style="text-align: right;margin-right:-10px;margin-top:-10px;"><span class="dot" style="background-color: #85F7A7;"></span></div>
+      {% elif postToShow.request.urgency_rating.count >= 5 %}
+      <div style="text-align: right;margin-right:-10px;margin-top:-10px;"><span class="dot" style="background-color: rgb(133, 150, 247);"></span></div>
+      {% else %}
+      <div style="text-align: right;margin-right:-10px;margin-top:-10px;"><span class="dot" style="background-color: rgb(247, 133, 190);"></span></div>
+      {% endif %}
+
+      <h2 style="text-align:center;color: #6F6F6F;font-weight: bold;margin:5px auto;text-align: center;">{{ postToShow.request.requirement }}</h2>
+      <h2 style="color:#6F6F6F;font-weight: 100;font-size: 120%;text-align: center;"><b>Category:</b> {{ postToShow.request.category }}</h2>
+      <h2 style="color: #6F6F6F;font-weight: 100;font-size: 120%;text-align: center;"><b>Requestor:</b> {{ postToShow.request.requestor.username }}</h2>
+
+      {% if postToShow.request.user_remarks %}
+      <p style="color:#6F6F6F;font-weight: 100;font-size: 120%;text-align: center;"><b>Requestor Remarks:</b> {{ postToShow.request.user_remarks|linebreaksbr }}</p>
+      {% endif %}
+      <p style="color:#6F6F6F;font-weight: 100;font-size: 120%;text-align: center;"><small><b>Urgency Rating: </b>{{ postToShow.request.urgency_rating.count }}</small></p>
+      <h2 style="color: #6F6F6F;font-weight: 100;font-size: 120%;text-align: center;"><b>Address:</b> {{ postToShow.request.address }}, {{ postToShow.request.city }}, {{ postToShow.request.state }}</h2>
+
+
+
+      <br style="clear:both">
+
+
+      <form action="{% url 'home:open_post' postToShow.request.requestor.username postToShow.request.timestamp_for_id %}" method="post">
+        {% csrf_token %}
+        {% if postToShow.liked %}
+        <button class="btn btn-danger" type="submit" name="Like" value="{{ postToShow.request.requestor.username }} {{ postToShow.request.timestamp_for_id }}" style="width:100%;">Remove Urgency</button>
+        {% else %}
+        <button class="btn btn-success" type="submit" name="Like" value="{{ postToShow.request.requestor.username }} {{ postToShow.request.timestamp_for_id }}" style="width:100%;">Add Urgency</button>
         {% endif %}
-        <p><small><b>Urgency Rating: </b>{{ postToShow.request.urgency_rating.count }}</small></p>
-
-        <br style="clear:both" />
-        <form class="" action="{% url 'home:open_post' postToShow.request.requestor.username postToShow.request.timestamp_for_id %}" method="post">
-          {% csrf_token %}
-          {% if postToShow.liked %}
-            <button class="btn btn-danger" type="Submit" name="Like">Remove Urgency</button>
-          {% else %}
-            <button class="btn btn-primary" type="Submit" name="Like">Add Urgency</button>
-          {% endif %}
-        </form>
-
+      </form>
 
       </div>
       <hr>
@@ -84,7 +140,7 @@
         {% csrf_token %}
         {{ comment_form|crispy }}
         <br>
-        <input class="btn btn-success" type="Submit" name="commentMade" value="Submit">
+        <input id="excluded" class="btn btn-success" type="Submit" name="commentMade" value="Submit">
       </form>
 
       <br>
