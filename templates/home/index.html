@@ -169,6 +169,10 @@
       {% endif %}
       <p style="color:#6F6F6F;font-weight: 100;font-size: 120%;text-align: center;"><small><b>Urgency Rating: </b>{{ post.request.urgency_rating.count }}</small></p>
 
+      {% if not post.request.address_allowed %}
+      <p style="color:red;font-weight: 100;font-size: 120%;text-align: center;">:Admin Only:</p>
+      {% endif %}
+
       <form action="{% url 'home:home' %}" method="post">
         {% csrf_token %}
 
