@@ -150,7 +150,7 @@ def mainPage(request):
 
 				return HttpResponseRedirect(reverse('home:main_page'))
 
-		queryse = Request.objects.filter(location__distance_lte=(user_location, D(km=3))).annotate(distance=Distance('location',user_location), q_count=Count('urgency_rating')).order_by('distance', '-q_count', '-id')
+		queryse = Request.objects.filter(location__distance_lte=(user_location, D(km=3))).annotate(distance=Distance('location',user_location), q_count=Count('urgency_rating')).filter(address_allowed=True).order_by('distance', '-q_count', '-id')
 
 		queryset=[]
 
@@ -183,6 +183,10 @@ def openPost(request, post_requestor_name, post_timestamp):
 					comment.save()
 
 					return HttpResponseRedirect(reverse('home:open_post', args=[post_requestor_name, post_timestamp]))
+				else:
+					return HttpResponseRedirect(reverse('home:open_post', args=[post_requestor_name, post_timestamp]))
+
+
 
 			if "Like" in request.POST:
 				print("LIKE: ", request.POST)
