@@ -64,11 +64,9 @@ class BootstrapInput(forms.TextInput):
 
 class PhoneVerificationForm(forms.Form):
 	country_code = forms.CharField(
-		widget=BootstrapInput('Country Code', size=3))
+		widget=BootstrapInput('Country Code', size=5))
 	phone_number = forms.CharField(
 		widget=BootstrapInput('Phone Number', size=10))
-	via = forms.ChoiceField(
-		choices=[('sms', 'SMS'), ('call', 'Call')])
 
 	def clean_country_code(self):
 		country_code = self.cleaned_data['country_code']

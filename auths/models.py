@@ -6,8 +6,8 @@ from django.dispatch import receiver
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    country_code = models.CharField(max_length=2)
-    phone = models.CharField(max_length=10)
+    country_code = models.CharField(max_length=3, default="+91")
+    phone = models.CharField(max_length=10, default="9876543210")
     def __str__(self):
         return self.user.username
 

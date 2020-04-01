@@ -43,7 +43,7 @@ def phoneVerificationView(request):
 				authy_api.phones.verification_start(
 					form.cleaned_data['phone_number'],
 					form.cleaned_data['country_code'],
-					via=form.cleaned_data['via']
+					via='sms'
 				)
 				return redirect('auths:tokenValidation')
 
