@@ -11,15 +11,14 @@ class Category(models.Model):
 
 
 class Request(models.Model):
-
-    #requestor details
+    # requestor details
     requestor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='requests')
-    location = models.PointField(srid=4326,geography=True)
+    location = models.PointField(srid=4326, geography=True)
     address = models.CharField(max_length=100)
     city = models.CharField(max_length=50)
     state = models.CharField(max_length=50)
 
-    #request details
+    # request details
     requirement = models.CharField(max_length=100)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='requests')
     urgency_rating = models.ManyToManyField(User, blank=True, related_name="post_urgency")
@@ -28,12 +27,12 @@ class Request(models.Model):
 
     timestamp_for_id = models.BigIntegerField(default=0)
 
-    #remarks
+    # remarks
     user_remarks = models.TextField(max_length=1024, blank=True)
     admin_remarks = models.TextField(max_length=1024, blank=True)
 
-    #status
+    # status
     status_completed = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.requestor.username+str(self.timestamp_for_id);
+        return self.requestor.username + str(self.timestamp_for_id);
