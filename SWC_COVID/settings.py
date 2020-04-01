@@ -30,7 +30,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'crispy_forms',
+
     'django.contrib.gis',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'auths',
     'home',
     'admin_panel',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
