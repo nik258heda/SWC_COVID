@@ -12,41 +12,6 @@ authy_api = AuthyApiClient(settings.ACCOUNT_SECURITY_API_KEY)
 	
 
 
-<<<<<<< HEAD
-
-def register(request):
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
-            if user.is_authenticated:
-                login(request, user)
-            # return redirect('home:home')
-            return redirect('auths:profileCollection')
-    else:
-        form = SignUpForm()
-    return render(request, 'auths/signup.html', {'form': form})
-
-
-def profileCollectionView(request):
-    if request.user.is_authenticated:
-        # if not Profile.objects.filter(user=request.user).exists():
-        if request.method == 'POST':
-            form = ProfileCollectionForm(request.POST)
-            if form.is_valid():
-                form.save(request.user)
-
-            return redirect('home:home')
-
-        else :
-            form = ProfileCollectionForm()
-            return render(request, 'auths/profileCollection.html', {'form': form})
-
-    return redirect('home:home')
-=======
 def register(request):
 	if request.method == 'POST':
 		form = SignUpForm(request.POST)
@@ -119,4 +84,4 @@ def phoneVerified(request):
 	if not request.session.get('is_verified'):
 		return redirect('auths:phoneVerification')
 	return render(request, 'auths/phoneverified.html', {'phoneNumber':request.session['phone_number']})
->>>>>>> authss
+
