@@ -72,11 +72,18 @@ def home(request):
 					Request.objects.get(requestor__username=postToLike[0], timestamp_for_id=int(postToLike[1])).urgency_rating.remove(request.user)
 				else:
 					Request.objects.get(requestor__username=postToLike[0], timestamp_for_id=int(postToLike[1])).urgency_rating.add(request.user)
-
-
-
 				return HttpResponseRedirect(reverse('home:home'))
-
+			elif request.is_ajax() and '2' in request.POST:
+				data = request.POST
+				print(data)
+				req = Request.objects.get(requestor__username=data['0'], timestamp_for_id=int(data['1']))
+				if req.urgency_rating.filter(id=request.user.id).exists():
+					Request.objects.get(requestor__username=data['0'],timestamp_for_id=int(data['1'])).urgency_rating.remove(request.user)
+				else:
+					Request.objects.get(requestor__username=data['0'],timestamp_for_id=int(data['1'])).urgency_rating.add(request.user)
+				return JsonResponse(data)
+			else:
+				return response
 		queryse = Request.objects.filter(requestor=request.user).order_by('-id');
 		queryset = []
 		for query in queryse:
