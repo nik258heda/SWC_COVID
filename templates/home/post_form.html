@@ -9,17 +9,37 @@
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
       integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
       crossorigin="anonymous">
+
+      <style media="screen">
+      .vertical-center {
+min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+min-height: 100vh; /* These two lines are counted as one :-)       */
+
+display: flex;
+align-items: center;
+}
+
+textarea{
+
+
+  height:50px;
+
+}
+
+
+      </style>
+
   </head>
   <body>
 
-    <div class="container">
-      <div class="jumbotron">
+    <div class="container vertical-center">
+      <div style="padding:15px; width:100%;border:1px solid black;border-radius:0px;background:none" class="jumbotron">
 
         <form action="{% url 'home:postForm' %}" method="post">
           {% csrf_token %}
           {{ add_request_form|crispy }}
           <br>
-          <input type="submit" class="btn btn-primary" name="" value="Make Request">
+          <input style="width:100%" type="submit" class="btn btn-primary" name="" value="Make Request">
         </form>
 
       </div>
