@@ -1,5 +1,5 @@
 from django import forms
-from admin_panel.models import Request
+from admin_panel.models import Request, Comment
 
 class AddRequestForm(forms.ModelForm):
     class Meta:
@@ -16,3 +16,12 @@ class AddRequestForm(forms.ModelForm):
         self.fields['city'].label = "<b>City</b>"
         self.fields['state'].label = "<b>State</b>"
         self.fields['user_remarks'].label = "<b>Remarks (Optional)</b>"
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = {'content',}
+
+    def __init__(self, *args, **kwargs):
+        super(CommentForm, self).__init__(*args, **kwargs)
+        self.fields['content'].label = "<b>Add Comment</b>"

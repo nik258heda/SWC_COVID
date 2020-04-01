@@ -37,3 +37,13 @@ class Request(models.Model):
 
     def __str__(self):
         return self.requestor.username+str(self.timestamp_for_id);
+
+class Comment(models.Model):
+    request = models.ForeignKey(Request, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.CharField(max_length=300)
+    created = models.DateTimeField(auto_now_add=True)
+    timestamp_for_id = models.BigIntegerField(default=0)
+
+    def __str__(self):
+        return self.user.username + str(self.timestamp_for_id)
