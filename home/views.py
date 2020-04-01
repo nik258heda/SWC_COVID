@@ -190,6 +190,10 @@ def openPost(request, post_requestor_name, post_timestamp):
 					comment.save()
 
 					return HttpResponseRedirect(reverse('home:open_post', args=[post_requestor_name, post_timestamp]))
+				else:
+					return HttpResponseRedirect(reverse('home:open_post', args=[post_requestor_name, post_timestamp]))
+
+
 
 			if "Like" in request.POST:
 				print("LIKE: ", request.POST)
