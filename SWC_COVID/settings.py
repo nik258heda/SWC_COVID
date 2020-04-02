@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'home',
     'admin_panel',
     'crispy_forms',
+    'mapwidgets',
 ]
 
 MIDDLEWARE = [
@@ -170,4 +171,12 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
     'PAGE_SIZE': 50,
+}
+
+MAP_WIDGETS = {
+    "GooglePointFieldWidget": (
+        ("zoom", 15),
+        ("mapCenterLocationName", "new delhi"),
+    ),
+    "GOOGLE_MAP_API_KEY": "AIzaSyB6usNdp_5I_E7i7cGhxKpxHIyEJiESmYo"
 }

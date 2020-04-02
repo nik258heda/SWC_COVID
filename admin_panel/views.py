@@ -8,10 +8,11 @@ from rest_framework_datatables import filters
 from rest_framework_datatables.renderers import DatatablesRenderer
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.views.generic import View
+from django.views.generic import FormView
 from django.db.models import Count
-from django.shortcuts import render, redirect
-
+from django.shortcuts import render
+from . import forms
+from django.contrib.gis.geos import Point, GEOSGeometry
 
 
 def superuser_required():
@@ -50,6 +51,21 @@ def approve_request(request):
 
 
 @superuser_required()
+class FilterRequestViewSet(viewsets.ModelViewSet):
+    queryset = models.Request.objects.all()
+    serializers = serializers.RequestSerializer
+
+    def get_request(self, pk):
+        queryset = self.queryset
+        point = models.Request.objects.get(pk=pk).location
+        return queryset.filter(location__distance_lt=(point, Distance(km=10))).order_by('pk')
+
+    def list(self, request, *args, **kwargs):
+        pk = 1
+        queryset = self.get_request(pk)
+
+
+@superuser_required()
 class RequestViewSet(viewsets.ModelViewSet):
     queryset = models.Request.objects.all()
     serializer_class = serializers.RequestSerializer
@@ -61,6 +77,33 @@ class RequestViewSet(viewsets.ModelViewSet):
 class RequestList(ListView):
     model = models.Request
 
+
 def sort_on_urgency(request):
-	request_list = models.Request.objects.annotate(u_count=Count('urgency_rating')).order_by('-u_count')
-	return render(request, 'admin_panel/request_list.html', {'request_list': request_list})
+    request_list = models.Request.objects.annotate(u_count=Count('urgency_rating')).order_by('-u_count')
+    return render(request, 'admin_panel/request_list.html', {'request_list': request_list})
+
+
+class NearbyForm(FormView):
+    template_name = 'admin_panel/nearby.html'
+    form_class = forms.RequestForm
+    success_url = ''
+
+    def post(self, request, *args, **kwargs):
+        form_class = self.form_class
+        form = self.get_form(form_class)
+        if form.is_valid():
+            return self.form_valid(form, **kwargs)
+        else:
+            print('invalid')
+            context = self.get_context_data(**kwargs)
+            return self.render_to_response(context=context)
+
+    def form_valid(self, form, **kwargs):
+        point = form.cleaned_data['location']
+        point = GEOSGeometry(point)
+        radius = form.cleaned_data['radius']
+        print(point, radius)
+        queryset = models.Request.objects.filter(location__distance_lte=(point, Distance(km=radius)))
+        context = self.get_context_data(**kwargs)
+        context['requests'] = queryset
+        return self.render_to_response(context)

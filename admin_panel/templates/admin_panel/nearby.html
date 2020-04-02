@@ -1,0 +1,107 @@
+{% include 'admin_panel/base.html' %}
+
+{% block titleBlock %}
+    <title>Nearby Requests</title>
+    {{ form.media }}
+{% endblock %}
+
+{% block bodyBlock %}
+    <div class="container">
+        <form action="{% url 'admin_panel:nearby' %}" method="post">
+            {% csrf_token %}
+            <div class="row">
+                {{ form.location }}
+            </div>
+            <label for="radius">Radius</label>
+            {{ form.radius }}
+            <input type="submit" class="btn-dark">
+        </form>
+
+    </div>
+
+    {% if requests %}
+        <div class="container">
+           <table id="request-table" class="table table-striped table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Request Id</th>
+                            <th>Name</th>
+                            <th class="dropdown">Category</th>
+                            <th>Location</th>
+                            <th>User Remarks</th>
+                            <th>Requested On</th>
+                            <th>Urgency</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in requests %}
+                            <tr>
+                                <td>{{ request.pk }}</td>
+                                <td>{{ request.requestor }}</td>
+                                <td>{{ request.category.category_name }}</td>
+                                <td>{{ request.location }}</td>
+                                <td>{{ request.user_remarks }}</td>
+                                <td>{{ request.created }}</td>
+                                <td>{{ request.urgency_rating.count }}</td>
+                                <td>{% if request.status_completed %}Completed{% else %}Pending{% endif %}</td>
+                                <td>{% if not request.status_completed %}
+                                    <button class="btn btn-primary btn-approve" data-pk="{{ request.pk }}">Approve</button>
+                                {% endif %}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th id = 'id'>Request Id</th>
+                            <th>Name</th>
+                            <th class="dropdown">Category</th>
+                            <th>Location</th>
+                            <th>User Remarks</th>
+                            <th>Requested On</th>
+                            <th>Urgency</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </tfoot>
+                </table>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block scriptBlock %}
+<script>
+    $(document).ready(function () {
+        $('.navbar-nav li').removeClass('active');
+        $('#nearby').addClass('active');
+
+        $('.btn-approve').click(function (e) {
+            {#alert('a');#}
+                var par = $(this).parent();
+                var pk = $(this).attr('data-pk');
+                console.log(pk);
+                var this_ = $(this);
+                var prev = par.prev();
+                $.ajax({
+                    url: '{% url 'admin_panel:approve-request' %}',
+                    data: {
+                        'pk': pk
+                    },
+                    success: function (data) {
+                        if(data.approved) {
+                            prev.html('Completed');
+                            console.log(par.html());
+                            par.html('')
+                        } else {
+                            console.log(data);
+                        }
+                    }, error: function (data) {
+                        console.log(data);
+                    }
+                });
+        });
+
+    });
+</script>
+{% endblock %}
