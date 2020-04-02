@@ -167,7 +167,15 @@
       {% if post.request.user_remarks %}
       <p style="color:#6F6F6F;font-weight: 100;font-size: 120%;text-align: center;">{{ post.request.user_remarks|linebreaksbr }}</p>
       {% endif %}
-      <p style="color:#6F6F6F;font-weight: 100;font-size: 120%;text-align: center;"><small><b>Urgency Rating: </b>{{ post.request.urgency_rating.count }}</small></p>
+      <div id="urgency_{{ post.request.timestamp_for_id }}">
+      <p style="color:#6F6F6F;font-weight: 100;font-size: 120%;text-align: center;"><small><b>Urgency Rating: </b>{{ post.request.urgency_rating.count }}</small>
+            {% if post.liked %}
+            <button class="btn btn-danger">Urgent</button>
+            {% else %}
+            <button class="btn btn-success" >Not urgent</button>
+            {% endif %}
+      </p>
+      </div>
 
       {% if not post.request.address_allowed %}
       <p style="color:red;font-weight: 100;font-size: 120%;text-align: center;">:Admin Only:</p>
@@ -186,19 +194,55 @@
       <br style="clear:both">
 
 
-      <form action="{% url 'home:home' %}" method="post">
+      <form action="{% url 'home:home' %}" method="post" name="{{ post.request.requestor.username }}" id="{{ post.request.timestamp_for_id }}">
         {% csrf_token %}
-        {% if post.liked %}
-        <button class="btn btn-danger" type="submit" name="postToLike" value="{{ post.request.requestor.username }} {{ post.request.timestamp_for_id }}" style="width:100%;">Remove Urgency</button>
-        {% else %}
-        <button class="btn btn-success" type="submit" name="postToLike" value="{{ post.request.requestor.username }} {{ post.request.timestamp_for_id }}" style="width:100%;">Add Urgency</button>
-        {% endif %}
+        <button class="btn btn-primary" type="submit" name="postToLike" value="{{ post.request.requestor.username }} {{ post.request.timestamp_for_id }}" style="width:100%;">CHANGE URGENCY</button>
       </form>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
+<script>
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
+var csrftoken = getCookie('csrftoken');
 
-
-  </div>
-
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+$(document).ready(function(){
+    $('#{{ post.request.timestamp_for_id }}').submit(function(e){
+    e.preventDefault();
+    method = 'POST'
+    url = $(this).attr('action');
+    data= {0:$(this).attr('name') , 1: $(this).attr('id'), 2: "{{ post.liked }}"};
+    $.post(url, data, function(response){
+          console.log(data);
+          $('#urgency_{{ post.request.timestamp_for_id }}').load(document.URL +  ' #urgency_{{ post.request.timestamp_for_id }}');
+    })
+})
+})
+</script>
+       </div>
       {% endfor %}
 
       <br><br>

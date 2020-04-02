@@ -11,7 +11,18 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-
+#if os.name == 'nt':
+#    import platform
+#    OSGEO4W = r"C:\OSGeo4W"
+#    if '64' in platform.architecture()[0]:
+#        OSGEO4W += "64"
+#    assert os.path.isdir(OSGEO4W), "Directory does not exist: " + OSGEO4W
+#    os.environ['OSGEO4W_ROOT'] = OSGEO4W
+#    os.environ['GDAL_DATA'] = OSGEO4W + r"\share\gdal"
+#    os.environ['PROJ_LIB'] = OSGEO4W + r"\share\proj"
+#    os.environ['PATH'] = OSGEO4W + r"\bin;" + os.environ['PATH']
+#GEOTH_LIBRARY_PATH = 'C:\\OSGeo4W64\\bin'
+#GDAL_LIBRARY_PATH = 'C:\\OSGeo4W64\\bin\\gdal300.dll'
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
@@ -147,6 +158,7 @@ SOCIAL_AUTH_URL_NAMESPACE = 'auths:social'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+ACCOUNT_SECURITY_API_KEY = "fZ84hm2yKMcjHzV52QJJArMo0jY1kgUW"
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
