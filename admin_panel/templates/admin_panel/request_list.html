@@ -98,30 +98,53 @@
     <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
     <script>
         function urgencyButtonToggler(this_) {
-            console.log(this_.nextElementSibling);
               this_.nextElementSibling.classList.toggle("show");
         }
         var table;
 
-        function urgencyChanger(this_, offset){
-            console.log(this_.parents())
+        function urgencyChanger(this_, color){
             var data = table.row( this_.parents('tr') ).data();
             var pk = data[ 'id' ];
             console.log(pk);
-            var par = $(this).parent();
+            var par = this_.parent().parent();
             var prev = par.prev().prev();
             var delta = 0;
             var urgency_rating = data[ 'urgency_rating' ];
-            if(urgency_rating < 5){
-                delta = 0;
+            if(color === 0){
+                if(urgency_rating < 5){
+                    delta = 0;
+                }
+                else if(urgency_rating < 10){
+                    delta = -5;
+                }
+                else{
+                    delta = 2 - urgency_rating;
+                }
             }
-            else if(urgency_rating < 10){
-                delta = -5;
+            else if(color === 1){
+                if(urgency_rating < 5){
+                    delta = 5;
+                }
+                else if(urgency_rating < 10){
+                    delta = 0;
+                }
+                else{
+                    delta = 7 - urgency_rating;
+                }
             }
             else{
-                delta = 2 - urgency_rating;
+                if(urgency_rating < 5){
+                    delta = 10;
+                }
+                else if(urgency_rating < 10){
+                    delta = 5;
+                }
+                else{
+                    delta = 0;
+                }
             }
-            delta += offset;
+            console.log(urgency_rating, color, delta);
+            // delta += offset;
             // console.log(delta, pk);
             $.ajax({
                 url: '{% url 'admin_panel:volunteer-delta' %}',
@@ -132,8 +155,10 @@
                 },
                 success: function (data) {
                     if(data.approved) {
-                        prev.html(parseInt(prev.html)+delta);
-                        this_.toggle();
+                        let newNum = parseInt(prev.html())+delta;
+                        prev.html(newNum);
+                        table.row( this_.parents('tr') ).data()['urgency_rating'] += delta;
+                        this_.parent()[0].classList.toggle("show");
                     } else {
                         console.log(data);
                     }
@@ -175,7 +200,7 @@
                 {#alert('approve?');#}
                 var data = table.row( $(this).parents('tr') ).data();
                 var pk = data[ 'id' ];
-                console.log(pk);
+                // console.log(pk);
                 var this_ = $(this);
                 var par = $(this).parent();
                 var prev = par.prev();
@@ -198,7 +223,6 @@
             });
             
             $('#request-table').on('click', '.btn-delta', function (e) {
-                // console.log("R",e.target, e.target.nextElementSibling);
                 urgencyButtonToggler(e.target);
             });
             $('#request-table').on('click', '.btn-filter', function (e) {
@@ -208,36 +232,17 @@
                 console.log(url);
                 table.ajax.url(url).load();
             });
-            // $('#request-table').on('click', '.btn-delta #white' ,function(e){
-            //     console.log("White");
-            //     console.log(this);
-            //     urgencyChanger($(this), 0);
-            // });
+            
             $('#request-table').on('click', '.white', function (e) {
-                // console.log(this);return;
                 urgencyChanger($(this), 0);
             });
             $('#request-table').on('click', '.green', function (e) {
-                // console.log(this);return;
-                urgencyChanger($(this), 5);
+                urgencyChanger($(this), 1);
             });
             $('#request-table').on('click', '.red', function (e) {
-                // console.log(this);return;
-                urgencyChanger($(this), 10);
+                urgencyChanger($(this), 2);
             });
-            // $( ".green" ).each(function(index) {
-            //     $(this).on("click", function(){
-            //         console.log($(this));return;
-            //         urgencyChanger($(this), 5);
-            //     });
-            // });
-            // $('.green').on('click', function(e){
-            //     console.log(this);return;
-            //     urgencyChanger($(this), 5);
-            // });
-            // $('#red').on('click', function(e){
-            //     urgencyChanger($(this), 10);
-            // });
+            
         } );
 
 

@@ -90,7 +90,6 @@ def change_delta(request):
 
     req.v_const += delta
     req.save()
-    print(pk, delta,"#######################################3")
     return JsonResponse({'approved': 'True'})
 
     return redirect('home:home')
