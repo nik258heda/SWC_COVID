@@ -61,6 +61,23 @@ class RequestViewSet(viewsets.ModelViewSet):
 class RequestList(ListView):
     model = models.Request
 
-def sort_on_urgency(request):
-	request_list = models.Request.objects.annotate(u_count=Count('urgency_rating')).order_by('-u_count')
-	return render(request, 'admin_panel/request_list.html', {'request_list': request_list})
+# def sort_on_urgency(request):
+# 	request_list = models.Request.objects.annotate(u_count=Count('urgency_rating')).order_by('-u_count')
+# 	return render(request, 'admin_panel/request_list.html', {'request_list': request_list})
+
+@staff_member_required
+def change_delta(request):
+    # if request.method == 'POST':
+    try:
+        pk = request.GET.get('pk')
+        delta = int(request.GET.get('delta'))
+        req = models.Request.objects.get(pk=pk)
+    except models.Request.DoesNotExist as e:
+        return JsonResponse({'error': e})
+
+    req.v_const += delta
+    req.save()
+    print(pk, delta,"#######################################3")
+    return JsonResponse({'approved': 'True'})
+
+    return redirect('home:home')

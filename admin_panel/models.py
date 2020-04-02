@@ -34,6 +34,9 @@ class Request(models.Model):
     # status
     status_completed = models.BooleanField(default=False)
 
+    #constant offset by volunteer
+    v_const = models.IntegerField(default=0);
+
     def __str__(self):
         return self.requestor.username + str(self.timestamp_for_id);
 

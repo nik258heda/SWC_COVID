@@ -27,7 +27,7 @@
         input:focus, text{
             outline: none !important;
         }
-        input[type="submit"]{
+        a {
             width:40%;
             border-radius: 25px;
             background-color:#7A7A7A;
@@ -35,7 +35,7 @@
             height:40px;
             font-size: 25px;
         }
-        input[type="submit"]:hover{
+        a:hover{
             opacity:0.8;
         }
     </style>
@@ -43,6 +43,30 @@
 <body>
     <div class = "container" style="margin-top:50px; text-align: center; color:#9C9C9C;">
         <h1>Congratulations!  You have verified your phone number</h1>
+    </div>
+    <div class= "container" style="margin-top:50px; text-align: center;">
+              <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                  <p>
+                    {{ field }}
+                    {% for error in field.errors %}
+                      <p style="color: red">{{ error }}</p>
+                    {% endfor %}
+                  </p>
+                {% endfor %}
+            <p style = "margin-top: 18px;">
+            <input type="submit" value="Sign Up"></p>
+            {% for field in form %}
+            {% for error in field.errors %}
+              <p style="color: red">{{ error }}</p>
+            {% endfor %}
+            {% endfor %}
+            </form>
+    </div>
+    <div class= "container" style="margin-top:150px; text-align: center;">
+        <p style = "margin-top: 30px;"></p>
+        <a class="btn btn-primary" id="button" type="button" href="{% url 'home:home' %}">Go back to home</a>
     </div>
     
 </body>

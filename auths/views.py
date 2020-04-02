@@ -7,6 +7,8 @@ from authy.api import AuthyApiClient
 from django.conf import settings
 from auths.models import Profile
 from django.core.exceptions import ValidationError
+from django.contrib.auth.decorators import login_required
+
 
 authy_api = AuthyApiClient(settings.ACCOUNT_SECURITY_API_KEY)
 
@@ -28,6 +30,7 @@ def register(request):
     return render(request, 'auths/signup.html', {'form': form})
 
 
+@login_required
 def phoneVerificationView(request):
 
     if request.user.is_authenticated:
@@ -54,7 +57,7 @@ def phoneVerificationView(request):
 
     return redirect('home:home')
 
-
+@login_required
 def tokenValidation(request):
     if request.method == 'POST':
         form = TokenForm(request.POST)
@@ -81,7 +84,7 @@ def tokenValidation(request):
         form = TokenForm()
     return render(request, 'auths/tokenverify.html', {'form': form})
 
-
+@login_required
 def phoneVerified(request):
     if not request.session.get('is_verified'):
         return redirect('auths:phoneVerification')

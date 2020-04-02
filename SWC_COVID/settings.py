@@ -67,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'auths.middleware.PhoneVerificationMiddleware'
 ]
 
 ROOT_URLCONF = 'SWC_COVID.urls'
@@ -153,7 +154,8 @@ AUTHENTICATION_BACKENDS = (
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '417763837165-b2ml6rtgvsej9tkqk1019rmqtqr31b1c.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'XUYUAD1IBf_4E1Eih26X5DTR'
 
-LOGIN_URL = '/auth/login/google-oauth2/'
+LOGIN_URL = '/auths/login'
+# LOGIN_URL = '/auth/login/google-oauth2/'
 SOCIAL_AUTH_URL_NAMESPACE = 'auths:social'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -171,3 +173,4 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
     'PAGE_SIZE': 50,
 }
+
