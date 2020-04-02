@@ -15,8 +15,9 @@ filter_requests = views.RequestViewSet.as_view(
 
 urlpatterns = [
     re_path('^api/', include(router.urls)),
+    re_path('^api/nearby_requests/<int:pk>', views.FilterRequestViewSet.as_view({'get': 'list'})),
     path('requests/', views.RequestList.as_view(), name='requests'),
     path('approve_request/', views.approve_request, name='approve-request'),
-    # path('surgency/', views.sort_on_urgency, name='surgency'),
     path('change_delta/', views.change_delta, name='volunteer-delta'),
+    path('nearby/', views.NearbyForm.as_view(), name='nearby'),
 ]
