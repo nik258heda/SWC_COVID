@@ -29,23 +29,24 @@ def register(request):
 
 
 def phoneVerificationView(request):
-    if request.user.is_authenticated:
-        # if not Profile.objects.filter(user=request.user).exists():
-        if request.method == 'POST':
-            form = PhoneVerificationForm(request.POST)
-            if form.is_valid():
-                request.session['phone_number'] = form.cleaned_data['phone_number']
-                request.session['country_code'] = form.cleaned_data['country_code']
-                if Profile.objects.filter(phone=form.cleaned_data['phone_number'],
-                                          country_code=form.cleaned_data['country_code']).exists():
-                    print("FC@@@@@@@@@@@@@@@@@@@@@@@@@@")
-                    raise ValidationError("Phone Number already exists")
-                authy_api.phones.verification_start(
-                    form.cleaned_data['phone_number'],
-                    form.cleaned_data['country_code'],
-                    via=form.cleaned_data['via']
-                )
-                return redirect('auths:tokenValidation')
+
+	if request.user.is_authenticated:
+		# if not Profile.objects.filter(user=request.user).exists():
+		if request.method == 'POST':
+			form = PhoneVerificationForm(request.POST)
+			if form.is_valid():
+				request.session['phone_number'] = form.cleaned_data['phone_number']
+				request.session['country_code'] = form.cleaned_data['country_code']
+				if Profile.objects.filter(phone=form.cleaned_data['phone_number'], country_code=form.cleaned_data['country_code']).exists():
+					print("FC@@@@@@@@@@@@@@@@@@@@@@@@@@")
+					raise ValidationError("Phone Number already exists")
+				authy_api.phones.verification_start(
+					form.cleaned_data['phone_number'],
+					form.cleaned_data['country_code'],
+					via='sms'
+				)
+				return redirect('auths:tokenValidation')
+
 
         else:
             form = PhoneVerificationForm()

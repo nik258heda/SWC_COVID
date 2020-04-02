@@ -9,6 +9,9 @@ from rest_framework_datatables.renderers import DatatablesRenderer
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import View
+from django.db.models import Count
+from django.shortcuts import render, redirect
+
 
 
 def superuser_required():
@@ -57,3 +60,7 @@ class RequestViewSet(viewsets.ModelViewSet):
 @superuser_required()
 class RequestList(ListView):
     model = models.Request
+
+def sort_on_urgency(request):
+	request_list = models.Request.objects.annotate(u_count=Count('urgency_rating')).order_by('-u_count')
+	return render(request, 'admin_panel/request_list.html', {'request_list': request_list})
