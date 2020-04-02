@@ -12,17 +12,18 @@
 {% block bodyBlock %}
     <div class="container">
         {% if request_list %}
-            <table id="example" class="table table-striped table-bordered" style="width:100%" data-ajax="/admin_panel/api/requests/?format=datatables">
+            <table id="request-table" class="table table-striped table-bordered" style="width:100%">
                 <thead>
                     <tr>
-                        <th data-data="requestor">Name</th>
-                        <th class="dropdown" data-data="category">Category</th>
-                        <th data-data="location">Location</th>
-                        <th data-data="user_remarks">User Remarks</th>
-                        <th data-data="created">Requested On</th>
-                        <th data-data="urgency_rating">Urgency</th>
-                        <th data-data="status_completed">Status</th>
-{#                        <th>Actions</th>#}
+                        <th>Request Id</th>
+                        <th>Name</th>
+                        <th class="dropdown">Category</th>
+                        <th>Location</th>
+                        <th>User Remarks</th>
+                        <th>Requested On</th>
+                        <th>Urgency</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
 {#                <tbody>#}
@@ -46,6 +47,7 @@
 {#                </tbody>#}
                 <tfoot>
                     <tr>
+                        <th>Request Id</th>
                         <th>Name</th>
                         <th class="dropdown">Category</th>
                         <th>Location</th>
@@ -53,6 +55,7 @@
                         <th>Requested On</th>
                         <th>Urgency</th>
                         <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </tfoot>
             </table>
@@ -67,11 +70,38 @@
     <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
     <script>
         $(document).ready(function() {
+            var dataURL = '/admin_panel/api/requests/?';
+            var table = $('#request-table').DataTable({
+                'serverSide': true,
+                'ajax': dataURL + 'format=datatables',
+                'columns': [
+                    {'data': 'id'},
+                    {'data': 'requestor'},
+                    {'data': 'category'},
+                    {'data': 'location'},
+                    {'data': 'user_remarks'},
+                    {'data': 'created'},
+                    {'data': 'urgency_rating'},
+                    {'data': 'status_completed'},
+                    {'render': function (data, type, row) {
+                        var s = '';
+                        if(row.status_completed === 'Pending') {
+                            s = '<a class="btn btn-primary btn-row text-white btn-approve" type="button"">Approve</a>';
+                        }
+                        s = s + '<a class="btn btn-primary btn-row text-white btn-filter" type="button">Show Nearby</a>';
+                        return s;
+                        }}
+                    {#{'data': null, 'defaultContent': '{% if request.status_completed %}{% else %}<a class="btn btn-primary btn-row text-white btn-approve" type="button" data-request="{{ request.pk }}">Approve</a>{% endif %}<a class="btn btn-primary btn-row text-white btn-filter" type="button">Show Nearby</a'},#}
+                ]
+            });
             $('.navbar-nav li').removeClass('active');
             $('#admin').addClass('active');
-            $('#example').DataTable();
-            $('.btn-approve').click(function (e) {
-                var pk = $(this).attr('data-request');
+            $('#request-table').on('click', '.btn-approve', function (e) {
+                {#alert('approve?');#}
+                var data = table.row( $(this).parents('tr') ).data();
+                var pk = data[ 'id' ];
+                console.log(pk);
+                var this_ = $(this);
                 var par = $(this).parent();
                 var prev = par.prev();
                 $.ajax({
@@ -82,7 +112,7 @@
                     success: function (data) {
                         if(data.approved) {
                             prev.html('Completed');
-                            par.html('');
+                            this_.toggle();
                         } else {
                             console.log(data);
                         }
@@ -91,6 +121,14 @@
                     }
                 });
             });
+
+            $('#request-table').on('click', '.btn-filter', function (e) {
+                var data = table.row( $(this).parents('tr') ).data();
+                var pk = data[ 'id' ];
+                var url = dataURL + 'nearby_pk=' + pk;
+                console.log(url);
+                table.ajax.url(url).load();
+            })
         } );
     </script>
 
