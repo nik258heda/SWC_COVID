@@ -87,6 +87,9 @@ input[type="submit"]:hover{
           <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-brand" href="{% url 'home:home' %}">Your Requests</a></li>
           <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'home:main_page' %}">Nearby Requests</a></li>
           <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'auths:logout' %}">Logout</a></li>
+          {% if request.user.is_superuser %}
+              <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'admin_panel:requests' %}">Admin</a></li>
+          {% endif %}
         </ul>
 
 

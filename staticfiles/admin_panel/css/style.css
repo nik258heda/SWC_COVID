@@ -1,3 +1,7 @@
 nav {
-    margin-bottom: 100px;
+    margin-bottom: 50px;
+}
+
+.btn-row {
+    margin-bottom: 10px !important;
 }

@@ -1,16 +1,28 @@
 from django.views.generic import ListView
 from . import models
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from rest_framework import viewsets
 from . import serializers
 from django.contrib.gis.measure import Distance
-from django.core.serializers import serialize
-from rest_framework.decorators import action
 from rest_framework_datatables import filters
-from rest_framework.response import Response
-from rest_framework_datatables.renderers import DatatablesRenderer, JSONRenderer
+from rest_framework_datatables.renderers import DatatablesRenderer
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.views.generic import View
 
 
+def superuser_required():
+    def wrapper(wrapped):
+        class WrappedClass(UserPassesTestMixin, wrapped):
+            def test_func(self):
+                return self.request.user.is_superuser
+
+        return WrappedClass
+
+    return wrapper
+
+
+@superuser_required()
 class NearbyLocationFilterBackend(filters.DatatablesFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
@@ -21,6 +33,7 @@ class NearbyLocationFilterBackend(filters.DatatablesFilterBackend):
         return queryset
 
 
+@staff_member_required
 def approve_request(request):
     try:
         pk = request.GET.get('pk')
@@ -33,6 +46,7 @@ def approve_request(request):
     return JsonResponse({'approved': 'True'})
 
 
+@superuser_required()
 class RequestViewSet(viewsets.ModelViewSet):
     queryset = models.Request.objects.all()
     serializer_class = serializers.RequestSerializer
@@ -40,5 +54,6 @@ class RequestViewSet(viewsets.ModelViewSet):
     renderer_classes = [DatatablesRenderer]
 
 
+@superuser_required()
 class RequestList(ListView):
     model = models.Request
