@@ -150,15 +150,14 @@
 
       {% for post in queryset %}
 
-
-
+      {% with post.request.v_const as v_const %}
       <div class = "continer" id="post" >
         <a style="font-size:20px;width:100%;" href="{% url 'home:open_post' post.request.requestor.username post.request.timestamp_for_id %}" class="btn btn-primary">SHOW DETAILS</a>
 
 
-        {% if post.request.urgency_rating.count >= 10 %}
+        {% if post.request.urgency_rating.count|add:v_const >= 10 %}
       <div style="text-align: right;margin-right:-10px;margin-top:-10px;"><span class="dot" style="background-color: #85F7A7;"></span></div>
-      {% elif post.request.urgency_rating.count >= 5 %}
+      {% elif post.request.urgency_rating.count|add:v_const >= 5 %}
       <div style="text-align: right;margin-right:-10px;margin-top:-10px;"><span class="dot" style="background-color: rgb(133, 150, 247);"></span></div>
       {% else %}
       <div style="text-align: right;margin-right:-10px;margin-top:-10px;"><span class="dot" style="background-color: rgb(247, 133, 190);"></span></div>
@@ -172,7 +171,7 @@
       <p style="color:#6F6F6F;font-weight: 100;font-size: 120%;text-align: center;">{{ post.request.user_remarks|linebreaksbr }}</p>
       {% endif %}
       <div id="urgency_{{ post.request.timestamp_for_id }}">
-      <p style="color:#6F6F6F;font-weight: 100;font-size: 120%;text-align: center;"><small><b>Urgency Rating: </b>{{ post.request.urgency_rating.count }}</small>
+      <p style="color:#6F6F6F;font-weight: 100;font-size: 120%;text-align: center;"><small><b>Urgency Rating: </b>{{ post.request.urgency_rating.count|add:v_const }}</small>
             {% if post.liked %}
             <button class="btn btn-danger">Urgent</button>
             {% else %}
@@ -247,6 +246,7 @@ $(document).ready(function(){
 })
 </script>
        </div>
+       {% endwith %}
       {% endfor %}
 
       <br><br>

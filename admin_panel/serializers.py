@@ -20,7 +20,7 @@ class RequestSerializer(serializers.ModelSerializer):
         return request.requestor.first_name + ' ' + request.requestor.last_name
 
     def get_urgency_rating(self, request):
-        return request.urgency_rating.count()
+        return request.urgency_rating.count() + request.v_const;
 
     def get_category(self, request):
         return request.category.category_name

@@ -1,5 +1,5 @@
-
- <!-- <style> 
+<!-- 
+ <style> 
  @import url(https://fonts.googleapis.com/css?family=Roboto:300);
 
 .login-page {
@@ -97,7 +97,7 @@
   color: #EF3B3A;
 }
 
-</style> -->
+</style>
   <!-- <div class="login-page">
   <div class="form" >
     <form class="register-form" method="post">
@@ -113,7 +113,7 @@
   </div>
 </div> -->
 
-<h2>Sign up</h2>
+<!-- <h2>Sign up</h2>
   <form method="post">
     {% csrf_token %}
     {% for field in form %}
@@ -133,4 +133,85 @@
     <a class="btn btn-danger" href="{% url 'auths:social:begin' 'google-oauth2' %}">
         Login with Google
     </a>
-  </form>
+  </form>  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <title></title>
+</head>
+<style type="text/css">
+     ::placeholder{
+            font-size: 20px;
+            color:#9C9C9C;
+        }
+        input[type="text"],input[type="number"],input[type="password"], input[type="email"]{
+            width:50%;
+            padding:12px;
+            text-align: left;
+            border-radius: 25px;
+            border:1.2px solid #9C9C9C;
+            margin-top: 20px;
+        }
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="submit"]{
+            width:50%;
+            border-radius: 25px;
+            background-color:#7A7A7A;
+            border:1px solid #9C9C9C;
+            font-size: large;
+            height: 40px;
+            font-size: 20px;
+        }
+        input:focus, text{
+            outline: none !important;
+        }
+</style>
+<body>
+    <div class = "container" style="margin-top:50px; text-align: center; color:#9C9C9C;">
+        <h1>Lets Get on Board</h1>
+        <div class= "container" style="margin-top:50px; text-align: center;">
+            
+              <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                  <p>
+                    <!-- {{ field.label_tag }}<br> -->
+                    {{ field }}
+                    <!-- {% if field.help_text %}
+                      <small style="color: grey">{{ field.help_text }}</small>
+                    {% endif %} -->
+                    {% for error in field.errors %}
+                      <p style="color: red">{{ error }}</p>
+                    {% endfor %}
+                  </p>
+                {% endfor %}
+            <!-- <input type="text" placeholder="Username" name="username" required="True">
+            <input type="text" placeholder="First name" name="first_name" required="True">
+            <input type="text" placeholder="Last name" name="last_name" required="True">
+            <input type="email" placeholder="Email" name="email" required="True">
+            <input type="password" placeholder="Password" name="password1" required="True">
+            <input type="password" placeholder="Re-enter Password" name="password2" required="True"> -->
+            <p style = "margin-top: 18px;">
+            <input type="submit" value="Sign Up"></p>
+            {% for field in form %}
+            {% for error in field.errors %}
+              <p style="color: red">{{ error }}</p>
+            {% endfor %}
+            {% endfor %}
+            </form>
+            <p class="message">Already registered? <a href="{% url 'auths:login' %}">Sign In</a></p>
+    <a class="btn btn-danger" href="{% url 'auths:social:begin' 'google-oauth2' %}">
+        Login with Google
+    </a>
+    </div>
+</body>
+</html>

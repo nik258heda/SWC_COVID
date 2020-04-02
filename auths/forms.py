@@ -6,8 +6,8 @@ from auths.models import Profile
 import phonenumbers
 
 class SignUpForm(UserCreationForm):
-	first_name = forms.CharField(max_length=100, required=True)
-	last_name = forms.CharField(max_length=100, required=True)
+	first_name = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={'placeholder': 'First Name'}))
+	last_name = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={'placeholder': 'Last Name'}))
 
 	def clean_email(self):
 		email = self.cleaned_data['email']
@@ -15,9 +15,26 @@ class SignUpForm(UserCreationForm):
 			raise ValidationError("Email already exists")
 		return email
 
+	def __init__(self, *args, **kwargs):
+		super(SignUpForm, self).__init__(*args, **kwargs)
+		for field_name in self.fields:
+			field = self.fields.get(field_name)  
+			if field:
+				if type(field.widget) in (forms.PasswordInput, 0):
+					field.widget = forms.PasswordInput(attrs={'placeholder': field.label})	
+					print(field)
+
+				print(field)
+
 	class Meta:
 		model = User
 		fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
+		widgets = {
+            'username': forms.TextInput(attrs={'placeholder': 'Username'}),
+            'first_name': forms.TextInput(attrs={'placeholder': 'First name'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'Last name'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'Email', 'required': True}),
+        }
 
 
 # class ProfileCollectionForm(forms.Form):

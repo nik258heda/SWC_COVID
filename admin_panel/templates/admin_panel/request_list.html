@@ -7,7 +7,33 @@
 
 {% block cssBlock %}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+    <style type="text/css">
+        .dropdown {
+  position: relative;
+  display: inline-block;
+}
 
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  overflow: auto;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown a:hover {background-color: #ddd;}
+
+.show {display: block;}
+    </style>
 {% endblock %}
 
 
@@ -71,9 +97,55 @@
     <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
     <script>
+        function urgencyButtonToggler(this_) {
+            console.log(this_.nextElementSibling);
+              this_.nextElementSibling.classList.toggle("show");
+        }
+        var table;
+
+        function urgencyChanger(this_, offset){
+            console.log(this_.parents())
+            var data = table.row( this_.parents('tr') ).data();
+            var pk = data[ 'id' ];
+            console.log(pk);
+            var par = $(this).parent();
+            var prev = par.prev().prev();
+            var delta = 0;
+            var urgency_rating = data[ 'urgency_rating' ];
+            if(urgency_rating < 5){
+                delta = 0;
+            }
+            else if(urgency_rating < 10){
+                delta = -5;
+            }
+            else{
+                delta = 2 - urgency_rating;
+            }
+            delta += offset;
+            // console.log(delta, pk);
+            $.ajax({
+                url: '{% url 'admin_panel:volunteer-delta' %}',
+                // type: 'POST',
+                data: {
+                    'pk': pk,
+                    'delta':delta,
+                },
+                success: function (data) {
+                    if(data.approved) {
+                        prev.html(parseInt(prev.html)+delta);
+                        this_.toggle();
+                    } else {
+                        console.log(data);
+                    }
+                }, error: function (data) {
+                    console.log(data);
+                }
+            });
+        }
         $(document).ready(function() {
+
             var dataURL = '/admin_panel/api/requests/?';
-            var table = $('#request-table').DataTable({
+            table = $('#request-table').DataTable({
                 'serverSide': true,
                 'ajax': dataURL + 'format=datatables',
                 'columns': [
@@ -91,6 +163,7 @@
                             s = '<a class="btn btn-primary btn-row text-white btn-approve" type="button"">Approve</a>';
                         }
                         s = s + '<a class="btn btn-primary btn-row text-white btn-filter" type="button">Show Nearby</a>';
+                        s = s + '<a class="btn btn-primary btn-row text-white btn-delta" class="dropbtn" type="button">Set Urgency</a><div id="myDropdown" class="dropdown-content"><a class="white" type="button">White</a><a class="green" type="button">Green</a><a class="red" type="button">Red</a></div>';
                         return s;
                         }}
                     {#{'data': null, 'defaultContent': '{% if request.status_completed %}{% else %}<a class="btn btn-primary btn-row text-white btn-approve" type="button" data-request="{{ request.pk }}">Approve</a>{% endif %}<a class="btn btn-primary btn-row text-white btn-filter" type="button">Show Nearby</a'},#}
@@ -123,15 +196,52 @@
                     }
                 });
             });
-
+            
+            $('#request-table').on('click', '.btn-delta', function (e) {
+                // console.log("R",e.target, e.target.nextElementSibling);
+                urgencyButtonToggler(e.target);
+            });
             $('#request-table').on('click', '.btn-filter', function (e) {
                 var data = table.row( $(this).parents('tr') ).data();
                 var pk = data[ 'id' ];
                 var url = dataURL + 'nearby_pk=' + pk;
                 console.log(url);
                 table.ajax.url(url).load();
-            })
+            });
+            // $('#request-table').on('click', '.btn-delta #white' ,function(e){
+            //     console.log("White");
+            //     console.log(this);
+            //     urgencyChanger($(this), 0);
+            // });
+            $('#request-table').on('click', '.white', function (e) {
+                // console.log(this);return;
+                urgencyChanger($(this), 0);
+            });
+            $('#request-table').on('click', '.green', function (e) {
+                // console.log(this);return;
+                urgencyChanger($(this), 5);
+            });
+            $('#request-table').on('click', '.red', function (e) {
+                // console.log(this);return;
+                urgencyChanger($(this), 10);
+            });
+            // $( ".green" ).each(function(index) {
+            //     $(this).on("click", function(){
+            //         console.log($(this));return;
+            //         urgencyChanger($(this), 5);
+            //     });
+            // });
+            // $('.green').on('click', function(e){
+            //     console.log(this);return;
+            //     urgencyChanger($(this), 5);
+            // });
+            // $('#red').on('click', function(e){
+            //     urgencyChanger($(this), 10);
+            // });
         } );
+
+
+
     </script>
 
 {% endblock %}
