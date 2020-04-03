@@ -23,7 +23,6 @@ def register(request):
             user = authenticate(username=username, password=raw_password)
             if user.is_authenticated:
                 login(request, user)
-            # return redirect('home:home')
             return redirect('auths:phoneVerification')
     else:
         form = SignUpForm()
@@ -41,7 +40,6 @@ def phoneVerificationView(request):
                 request.session['phone_number'] = form.cleaned_data['phone_number']
                 request.session['country_code'] = form.cleaned_data['country_code']
                 if Profile.objects.filter(phone=form.cleaned_data['phone_number'], country_code=form.cleaned_data['country_code']).exists():
-                    print("FC@@@@@@@@@@@@@@@@@@@@@@@@@@")
                     raise ValidationError("Phone Number already exists")
                 authy_api.phones.verification_start(
                     form.cleaned_data['phone_number'],
@@ -55,7 +53,7 @@ def phoneVerificationView(request):
             form = PhoneVerificationForm()
             return render(request, 'auths/phoneVerification.html', {'form': form})
 
-    return redirect('home:home')
+    return redirect('home:ezhome')
 
 @login_required
 def tokenValidation(request):
