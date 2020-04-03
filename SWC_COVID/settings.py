@@ -101,12 +101,12 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'gis',
         'USER': 'user001',
-        'PASSWORD': '123456789',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'PASSWORD': 'Koq35689',
+        'HOST': 'swc-1565.postgres.pythonanywhere-services.com',
+        'PORT': '11565'
     }
 }
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
