@@ -77,6 +77,17 @@ def home(request, latitude, longitude):
 
 				return HttpResponseRedirect(reverse('home:home', args=[float(latitude), float(longitude)]))
 
+			elif request.is_ajax() and request.POST['100']:
+				data = request.POST
+				req = Request.objects.get(requestor__username=data['0'], timestamp_for_id=int(data['1']))
+				if req.urgency_rating.filter(id=request.user.id).exists():
+					Request.objects.get(requestor__username=data['0'],timestamp_for_id=int(data['1'])).urgency_rating.remove(request.user)
+				else:
+					Request.objects.get(requestor__username=data['0'],timestamp_for_id=int(data['1'])).urgency_rating.add(request.user)
+				return JsonResponse(data)
+			else:
+				return response
+
 		queryse = Request.objects.filter(requestor=request.user).order_by('-id');
 		queryset = []
 		for query in queryse:
