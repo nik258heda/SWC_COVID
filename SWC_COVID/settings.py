@@ -23,7 +23,7 @@ import os
 #    os.environ['PATH'] = OSGEO4W + r"\bin;" + os.environ['PATH']
 #GEOTH_LIBRARY_PATH = 'C:\\OSGeo4W64\\bin'
 #GDAL_LIBRARY_PATH = 'C:\\OSGeo4W64\\bin\\gdal300.dll'
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+#Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
@@ -100,12 +100,12 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'gis',
         'USER': 'user001',
-        'PASSWORD': 'Koq35689',
-        'HOST': 'swc-1565.postgres.pythonanywhere-services.com',
-        'PORT': '11565'
+        'PASSWORD': '123456789',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
-
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
