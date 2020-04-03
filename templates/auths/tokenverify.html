@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <style type="text/css">
+        ::placeholder{
+            font-size: 27PX;
+            color:#9C9C9C;
+        }
+        input[type="number"]{
+            width:60%;
+            padding:12px;
+            text-align: center;
+            border-radius: 25px;
+            border:1.2px solid #9C9C9C;
+        }
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input:focus, text{
+            outline: none !important;
+        }
+        input[type="submit"]{
+            width:40%;
+            border-radius: 25px;
+            background-color:#7A7A7A;
+            border:1px solid #9C9C9C;
+            height:40px;
+            font-size: 25px;
+        }
+        input[type="submit"]:hover{
+            opacity:0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class = "container" style="margin-top:50px; text-align: center; color:#9C9C9C;">
+        <h1>Getting you Verified</h1>
+    </div>
+    <div class= "container" style="margin-top:150px; text-align: center;">
+        <form method="POST">
+            {% csrf_token %}
+        <input type="number" id="OTP" placeholder="Enter OTP" name="token" required="true" ;min="1000" max="9999">
+        <p style = "margin-top: 30px;"><input id="button" type="submit" value="Verify"></p>
+        </form>
+    </div>
+</body>
+</html>

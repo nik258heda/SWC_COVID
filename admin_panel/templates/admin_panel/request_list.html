@@ -1,62 +1,209 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+{% extends 'admin_panel/base.html' %}
+
+{% block titleBlock %}
     <title>Requests List</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+{% endblock %}
+
+{% block cssBlock %}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
-</head>
-<body>
-    {% if request_list %}
-        <table id="example" class="table table-striped table-bordered" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th class="dropdown">Category</th>
-                    <th>User Remarks</th>
-                    <th>Requested On</th>
-                    <th>Urgency</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for request in request_list %}
-                <tr>
-                    <td>{{ request.requested_by }}</td>
-                    <td>{{ request.category.category_name }}</td>
-                    <td>{{ request.user_remarks }}</td>
-                    <td>{{ request.requested_on }}</td>
-                    <td>{{ request.urgency_rating }}</td>
-                    <td>{% if request.status_completed %}Completed{% else %}Pending&nbsp;<a class="btn btn-primary text-white btn-approve" type="button" data-request="{{ request.pk }}">Approve</a>{% endif %}</td>
-                </tr>
+    <style type="text/css">
+        .dropdown {
+  position: relative;
+  display: inline-block;
+}
 
-            {% endfor %}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>Name</th>
-                    <th class="dropdown">Category</th>
-                    <th>User Remarks</th>
-                    <th>Requested On</th>
-                    <th>Urgency</th>
-                    <th>Status</th>
-                </tr>
-            </tfoot>
-        </table>
-    {% else %}
-        <h1>No Pending Requests</h1>
-    {% endif %}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  overflow: auto;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
 
-    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown a:hover {background-color: #ddd;}
+
+.show {display: block;}
+    </style>
+{% endblock %}
+
+
+{% block bodyBlock %}
+    <div class="container">
+        {% if request_list %}
+            <table id="request-table" class="table table-striped table-bordered" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Request Id</th>
+                        <th>Name</th>
+                        <th class="dropdown">Category</th>
+                        <th>Location</th>
+                        <th>User Remarks</th>
+                        <th>Requested On</th>
+                        <th>Urgency</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+{#                <tbody>#}
+{#                {% for request in request_list %}#}
+{#                    <tr>#}
+{#                        <td>{{ request.requestor }}</td>#}
+{#                        <td>{{ request.category.category_name }}</td>#}
+{#                        <td>{{ request.location }}</td>#}
+{#                        <td>{{ request.user_remarks }}</td>#}
+{#                        <td>{{ request.created }}</td>#}
+{#                        <td>{{ request.urgency_rating }}</td>#}
+{#                        <td>{% if request.status_completed %}Completed{% else %}Pending{% endif %}</td>#}
+{#                        <td>#}
+{#                            {% if request.status_completed %}{% else %}<a class="btn btn-primary btn-row text-white btn-approve" type="button" data-request="{{ request.pk }}">Approve</a>{% endif %}#}
+{##}
+{#                            <a class="btn btn-primary btn-row text-white btn-filter" type="button">Show Nearby</a>#}
+{#                        </td>#}
+{#                    </tr>#}
+{##}
+{#                {% endfor %}#}
+{#                </tbody>#}
+                <tfoot>
+                    <tr>
+                        <th>Request Id</th>
+                        <th>Name</th>
+                        <th class="dropdown">Category</th>
+                        <th>Location</th>
+                        <th>User Remarks</th>
+                        <th>Requested On</th>
+                        <th>Urgency</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </tfoot>
+            </table>
+        {% else %}
+            <h1>No Pending Requests</h1>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block scriptBlock %}
     <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
     <script>
+        function urgencyButtonToggler(this_) {
+              this_.nextElementSibling.classList.toggle("show");
+        }
+        var table;
+
+        function urgencyChanger(this_, color){
+            var data = table.row( this_.parents('tr') ).data();
+            var pk = data[ 'id' ];
+            console.log(pk);
+            var par = this_.parent().parent();
+            var prev = par.prev().prev();
+            var delta = 0;
+            var urgency_rating = data[ 'urgency_rating' ];
+            if(color === 0){
+                if(urgency_rating < 5){
+                    delta = 0;
+                }
+                else if(urgency_rating < 10){
+                    delta = -5;
+                }
+                else{
+                    delta = 2 - urgency_rating;
+                }
+            }
+            else if(color === 1){
+                if(urgency_rating < 5){
+                    delta = 5;
+                }
+                else if(urgency_rating < 10){
+                    delta = 0;
+                }
+                else{
+                    delta = 7 - urgency_rating;
+                }
+            }
+            else{
+                if(urgency_rating < 5){
+                    delta = 10;
+                }
+                else if(urgency_rating < 10){
+                    delta = 5;
+                }
+                else{
+                    delta = 0;
+                }
+            }
+            console.log(urgency_rating, color, delta);
+            // delta += offset;
+            // console.log(delta, pk);
+            $.ajax({
+                url: '{% url 'admin_panel:volunteer-delta' %}',
+                // type: 'POST',
+                data: {
+                    'pk': pk,
+                    'delta':delta,
+                },
+                success: function (data) {
+                    if(data.approved) {
+                        let newNum = parseInt(prev.html())+delta;
+                        prev.html(newNum);
+                        table.row( this_.parents('tr') ).data()['urgency_rating'] += delta;
+                        this_.parent()[0].classList.toggle("show");
+                    } else {
+                        console.log(data);
+                    }
+                }, error: function (data) {
+                    console.log(data);
+                }
+            });
+        }
         $(document).ready(function() {
-            console.log("HEHE");
-            $('#example').DataTable();
-            $('.btn-approve').click(function (e) {
-                var pk = $(this).attr('data-request');
+
+            var dataURL = '/admin_panel/api/requests/?';
+            table = $('#request-table').DataTable({
+                'serverSide': true,
+                'ajax': dataURL + 'format=datatables',
+                'columns': [
+                    {'data': 'id'},
+                    {'data': 'requestor'},
+                    {'data': 'category'},
+                    {'data': 'location'},
+                    {'data': 'user_remarks'},
+                    {'data': 'created'},
+                    {'data': 'urgency_rating'},
+                    {'data': 'status_completed'},
+                    {'render': function (data, type, row) {
+                        var s = '';
+                        if(row.status_completed === 'Pending') {
+                            s = '<a class="btn btn-primary btn-row text-white btn-approve" type="button"">Approve</a>';
+                        }
+                        s = s + '<a class="btn btn-primary btn-row text-white btn-filter" type="button">Show Nearby</a>';
+                        s = s + '<a class="btn btn-primary btn-row text-white btn-delta" class="dropbtn" type="button">Set Urgency</a><div id="myDropdown" class="dropdown-content"><a class="white" type="button">White</a><a class="green" type="button">Green</a><a class="red" type="button">Red</a></div>';
+                        return s;
+                        }}
+                    {#{'data': null, 'defaultContent': '{% if request.status_completed %}{% else %}<a class="btn btn-primary btn-row text-white btn-approve" type="button" data-request="{{ request.pk }}">Approve</a>{% endif %}<a class="btn btn-primary btn-row text-white btn-filter" type="button">Show Nearby</a'},#}
+                ]
+            });
+            $('.navbar-nav li').removeClass('active');
+            $('#admin').addClass('active');
+            $('#request-table').on('click', '.btn-approve', function (e) {
+                {#alert('approve?');#}
+                var data = table.row( $(this).parents('tr') ).data();
+                var pk = data[ 'id' ];
+                // console.log(pk);
+                var this_ = $(this);
                 var par = $(this).parent();
+                var prev = par.prev();
                 $.ajax({
                     url: '{% url 'admin_panel:approve-request' %}',
                     data: {
@@ -64,7 +211,8 @@
                     },
                     success: function (data) {
                         if(data.approved) {
-                            par.html('Completed');
+                            prev.html('Completed');
+                            this_.toggle();
                         } else {
                             console.log(data);
                         }
@@ -73,7 +221,32 @@
                     }
                 });
             });
+            
+            $('#request-table').on('click', '.btn-delta', function (e) {
+                urgencyButtonToggler(e.target);
+            });
+            $('#request-table').on('click', '.btn-filter', function (e) {
+                var data = table.row( $(this).parents('tr') ).data();
+                var pk = data[ 'id' ];
+                var url = dataURL + 'nearby_pk=' + pk;
+                console.log(url);
+                table.ajax.url(url).load();
+            });
+            
+            $('#request-table').on('click', '.white', function (e) {
+                urgencyChanger($(this), 0);
+            });
+            $('#request-table').on('click', '.green', function (e) {
+                urgencyChanger($(this), 1);
+            });
+            $('#request-table').on('click', '.red', function (e) {
+                urgencyChanger($(this), 2);
+            });
+            
         } );
+
+
+
     </script>
-</body>
-</html>
+
+{% endblock %}

@@ -77,9 +77,12 @@
 
 
     <ul class="nav navbar-nav">
-      <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-brand" href="{% url 'home:home' %}">Your Requests</a></li>
-      <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'home:main_page' %}">Nearby Requests</a></li>
+      <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-brand" href="{% url 'home:home' latitude longitude %}">Your Requests</a></li>
+      <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'home:main_page' latitude longitude %}">Nearby Requests</a></li>
       <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'auths:logout' %}">Logout</a></li>
+      {% if request.user.is_superuser %}
+              <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'admin_panel:requests' %}">Admin</a></li>
+      {% endif %}
     </ul>
 
 
@@ -106,7 +109,7 @@
     <h1>Nearby Requests</h1>
 
     <a style="display:none" id = "map-link" target="_blank"></a>
-    <form style="display:none" action="{% url 'home:main_page' %}" method="post">
+    <form style="display:none" action="{% url 'home:main_page' latitude longitude %}" method="post">
       {% csrf_token %}
       <input id="latitude" type="text" name="latitude" value="">
       <input id="longitude" type="text" name="longitude" value="">
@@ -117,16 +120,16 @@
 
       &nbsp;
       {% if not user.profile %}
-      <a class="btn btn-primary" href="{% url 'auths:profileCollection' %}">Add Phone Number</a>
+      <a class="btn btn-primary" href="{% url 'auths:phoneVerification' %}">Add Phone Number</a>
       {% endif %}
       <br> <br>
       {% if latitude != 0 or longitude != 0  %}
-      <a class="btn btn-primary" href="{% url 'home:postForm' %}">Add Request</a>
+      <a class="btn btn-primary" href="{% url 'home:postForm' latitude longitude %}">Add Request</a>
       {% else %}
       <p>Your current location has not been calculated yet. Nearby posts will only show up once your current location is loaded.</p>
       {% endif %}
       <br><br>
-      <form class="" action="{% url 'home:main_page' %}" method="post">
+      <form class="" action="{% url 'home:main_page' latitude longitude %}" method="post">
         {% csrf_token %}
         <input type="submit" name="refreshLocation" value="Refresh Current Location">
       </form>
@@ -142,7 +145,7 @@
 
 
       <div class = "continer" id="post" >
-        <a style="font-size:20px;width:100%;" href="{% url 'home:open_post' post.request.requestor.username post.request.timestamp_for_id %}" class="btn btn-primary">SHOW DETAILS</a>
+        <a style="font-size:20px;width:100%;" href="{% url 'home:open_post' post.request.requestor.username post.request.timestamp_for_id latitude longitude %}" class="btn btn-primary">SHOW DETAILS</a>
 
         {% if post.request.urgency_rating.count >= 10 %}
       <div style="text-align: right;margin-right:-10px;margin-top:-10px;"><span class="dot" style="background-color: #85F7A7;"></span></div>
@@ -162,25 +165,73 @@
       {% if post.request.user_remarks %}
       <p style="color:#6F6F6F;font-weight: 100;font-size: 120%;text-align: center;">{{ post.request.user_remarks|linebreaksbr }}</p>
       {% endif %}
-      <p style="color:#6F6F6F;font-weight: 100;font-size: 120%;text-align: center;"><small><b>Urgency Rating: </b>{{ post.request.urgency_rating.count }}</small></p>
-
+      <div id="urgency_{{ post.request.timestamp_for_id }}">
+      <p style="color:#6F6F6F;font-weight: 100;font-size: 120%;text-align: center;"><small><b>Urgency Rating: </b>{{ post.request.urgency_rating.count }}</small>
+            {% if post.liked %}
+            <button class="btn btn-danger">Urgent</button>
+            {% else %}
+            <button class="btn btn-success" >Not urgent</button>
+            {% endif %}
+      </p>
+      </div>
 
 
       <br style="clear:both">
 
 
-      <form action="{% url 'home:main_page' %}" method="post">
+      <form action="{% url 'home:main_page' latitude longitude %}" method="post" name="{{ post.request.requestor.username }}" id="{{ post.request.timestamp_for_id }}">
         {% csrf_token %}
-        {% if post.liked %}
-        <button class="btn btn-danger" type="submit" name="postToLike" value="{{ post.request.requestor.username }} {{ post.request.timestamp_for_id }}" style="width:100%;">Remove Urgency</button>
-        {% else %}
-        <button class="btn btn-success" type="submit" name="postToLike" value="{{ post.request.requestor.username }} {{ post.request.timestamp_for_id }}" style="width:100%;">Add Urgency</button>
-        {% endif %}
+        <button class="btn btn-primary" type="submit" name="postToLike" value="{{ post.request.requestor.username }} {{ post.request.timestamp_for_id }}" style="width:100%;">CHANGE URGENCY</button>
       </form>
+      </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
+<script>
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+var csrftoken = getCookie('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+$(document).ready(function(){
+    $('#{{ post.request.timestamp_for_id }}').submit(function(e){
+    e.preventDefault();
+
+    url = $(this).attr('action');
+    data= {0:$(this).attr('name') , 1: $(this).attr('id'), 2: "{{ post.liked }}"};
+    $.post(url, data, function(response){
+          console.log(data);
+          $('#urgency_{{ post.request.timestamp_for_id }}').load(document.URL +  ' #urgency_{{ post.request.timestamp_for_id }}');
+    })
+})
+})
+</script>
 
 
 
-    </div>
+
 
       {% endfor %}
 

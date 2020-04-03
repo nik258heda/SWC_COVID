@@ -11,7 +11,18 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-
+#if os.name == 'nt':
+#    import platform
+#    OSGEO4W = r"C:\OSGeo4W"
+#    if '64' in platform.architecture()[0]:
+#        OSGEO4W += "64"
+#    assert os.path.isdir(OSGEO4W), "Directory does not exist: " + OSGEO4W
+#    os.environ['OSGEO4W_ROOT'] = OSGEO4W
+#    os.environ['GDAL_DATA'] = OSGEO4W + r"\share\gdal"
+#    os.environ['PROJ_LIB'] = OSGEO4W + r"\share\proj"
+#    os.environ['PATH'] = OSGEO4W + r"\bin;" + os.environ['PATH']
+#GEOTH_LIBRARY_PATH = 'C:\\OSGeo4W64\\bin'
+#GDAL_LIBRARY_PATH = 'C:\\OSGeo4W64\\bin\\gdal300.dll'
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
@@ -25,7 +36,7 @@ SECRET_KEY = '4m)5o&bzkhy_y^uu)&375_1f=i43lmn1loa2dej0(t)e6io32-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['swc.pythonanywhere.com', '127.0.0.1']
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -46,6 +57,8 @@ INSTALLED_APPS = [
     'home',
     'admin_panel',
     'crispy_forms',
+    'mapwidgets',
+
 ]
 
 MIDDLEWARE = [
@@ -56,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'auths.middleware.PhoneVerificationMiddleware'
 ]
 
 ROOT_URLCONF = 'SWC_COVID.urls'
@@ -87,9 +101,9 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'gis',
         'USER': 'user001',
-        'PASSWORD': '123456789',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'PASSWORD': 'Koq35689',
+        'HOST': 'swc-1565.postgres.pythonanywhere-services.com',
+        'PORT': '11565'
     }
 }
 
@@ -131,6 +145,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'admin_panel/templates/admin_panel/static'), ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
@@ -140,7 +156,30 @@ AUTHENTICATION_BACKENDS = (
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '417763837165-b2ml6rtgvsej9tkqk1019rmqtqr31b1c.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'XUYUAD1IBf_4E1Eih26X5DTR'
 
-LOGIN_URL = '/auth/login/google-oauth2/'
+LOGIN_URL = '/auths/login'
+# LOGIN_URL = '/auth/login/google-oauth2/'
 SOCIAL_AUTH_URL_NAMESPACE = 'auths:social'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+ACCOUNT_SECURITY_API_KEY = "fZ84hm2yKMcjHzV52QJJArMo0jY1kgUW"
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework_datatables.renderers.DatatablesRenderer',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework_datatables.filters.DatatablesFilterBackend',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
+    'PAGE_SIZE': 50,
+}
+
+MAP_WIDGETS = {
+    "GooglePointFieldWidget": (
+        ("zoom", 15),
+        ("mapCenterLocationName", "new delhi"),
+    ),
+    "GOOGLE_MAP_API_KEY": "AIzaSyB6usNdp_5I_E7i7cGhxKpxHIyEJiESmYo"
+}
