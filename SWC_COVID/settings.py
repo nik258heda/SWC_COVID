@@ -36,7 +36,7 @@ SECRET_KEY = '4m)5o&bzkhy_y^uu)&375_1f=i43lmn1loa2dej0(t)e6io32-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['swc.pythonanywhere.com']
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
