@@ -18,8 +18,8 @@ from .forms import AddRequestForm, CommentForm
 import time
 from django.db.models import Count
 
-latitude = 0
-longitude = 0
+
+
 
 
 class PostToPass():
@@ -30,10 +30,7 @@ class PostToPass():
 		self.request = a
 		self.liked = b
 
-
-user_location = Point()
-
-def home(request):
+def home(request, latitude, longitude):
 
 
 
@@ -43,27 +40,28 @@ def home(request):
 
 			if('coordinatesSubmitted' in request.POST):
 
-				global latitude
-				latitude = float(request.POST['latitude'])
-				global longitude
-				longitude = float(request.POST['longitude'])
-				print('LATITUDE: {}, LONGITUDE: {}'.format(latitude, longitude))
-				global user_location
-				user_location = Point(longitude, latitude, srid=4326)
+
+				newlatitude = float(request.POST['latitude'])
+
+				newlongitude = float(request.POST['longitude'])
+
+				print('LATITUDE: {}, LONGITUDE: {}'.format(newlatitude, newlongitude))
+
+				user_location = Point(newlongitude, newlatitude, srid=4326)
+
 				print(user_location)
 
-				return HttpResponseRedirect(reverse('home:home'))
+				return HttpResponseRedirect(reverse('home:home', args=[newlatitude, newlongitude]))
 			elif 'refreshLocation' in request.POST:
 
-				longitude = 0
+				return HttpResponseRedirect(reverse('home:home', args=[0, 0]))
 
-				latitude = 0
-				return HttpResponseRedirect(reverse('home:home'))
 			elif 'deletePost' in request.POST:
 				postToDelete = request.POST['postToDelete'].split()
 				print('POST TO BE DELETED: ', postToDelete)
 				Request.objects.filter(requestor__username=postToDelete[0], timestamp_for_id=int(postToDelete[1])).delete()
-				return HttpResponseRedirect(reverse('home:home'))
+				return HttpResponseRedirect(reverse('home:home', args=[latitude, longitide]))
+
 			elif 'postToLike' in request.POST:
 				postToLike = request.POST['postToLike'].split()
 				print("POST TO LIKE", postToLike)
@@ -75,7 +73,7 @@ def home(request):
 
 
 
-				return HttpResponseRedirect(reverse('home:home'))
+				return HttpResponseRedirect(reverse('home:home', args=[latitude, longitude]))
 
 		queryse = Request.objects.filter(requestor=request.user).order_by('-id');
 		queryset = []
@@ -88,7 +86,11 @@ def home(request):
 
 		print("Queries: ", queryset)
 
-		return render(request, "home/index.html", {'latitude': latitude, 'longitude': longitude, 'queryset': queryset})
+		latitudeToPass = float(latitude);
+		longitudeToPass = float(longitude);
+
+
+		return render(request, "home/index.html", {'queryset': queryset, 'latitude':latitudeToPass, 'longitude':longitudeToPass})
 
 	return render(request, "home/index.html")
 
@@ -198,8 +200,6 @@ def openPost(request, post_requestor_name, post_timestamp):
 
 				url=reverse('home:open_post', args=[post_requestor_name, post_timestamp])
 				return HttpResponseRedirect(url)
-
-
 
 
 		postToShow = Request.objects.get(requestor__username=post_requestor_name, timestamp_for_id=post_timestamp)
