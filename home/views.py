@@ -18,8 +18,8 @@ from .forms import AddRequestForm, CommentForm
 import time
 from django.db.models import Count
 
-latitude = 0
-longitude = 0
+
+
 
 
 class PostToPass():
@@ -31,9 +31,11 @@ class PostToPass():
 		self.liked = b
 
 
-user_location = Point()
+def pathwayToHome(request):
+	return HttpResponseRedirect(reverse('home:home', args=[0.0, 0.0]))
 
-def home(request):
+
+def home(request, latitude, longitude):
 
 
 
@@ -43,27 +45,28 @@ def home(request):
 
 			if('coordinatesSubmitted' in request.POST):
 
-				global latitude
-				latitude = float(request.POST['latitude'])
-				global longitude
-				longitude = float(request.POST['longitude'])
-				print('LATITUDE: {}, LONGITUDE: {}'.format(latitude, longitude))
-				global user_location
-				user_location = Point(longitude, latitude, srid=4326)
+
+				newlatitude = float(request.POST['latitude'])
+
+				newlongitude = float(request.POST['longitude'])
+
+				print('LATITUDE: {}, LONGITUDE: {}'.format(newlatitude, newlongitude))
+
+				user_location = Point(newlatitude, newlongitude, srid=4326)
+
 				print(user_location)
 
-				return HttpResponseRedirect(reverse('home:home'))
+				return HttpResponseRedirect(reverse('home:home', args=[newlatitude, newlongitude]))
 			elif 'refreshLocation' in request.POST:
 
-				longitude = 0
+				return HttpResponseRedirect(reverse('home:home', args=[0.0, 0.0]))
 
-				latitude = 0
-				return HttpResponseRedirect(reverse('home:home'))
 			elif 'deletePost' in request.POST:
 				postToDelete = request.POST['postToDelete'].split()
 				print('POST TO BE DELETED: ', postToDelete)
 				Request.objects.filter(requestor__username=postToDelete[0], timestamp_for_id=int(postToDelete[1])).delete()
-				return HttpResponseRedirect(reverse('home:home'))
+				return HttpResponseRedirect(reverse('home:home', args=[latitude, longitude]))
+
 			elif 'postToLike' in request.POST:
 				postToLike = request.POST['postToLike'].split()
 				print("POST TO LIKE", postToLike)
@@ -75,7 +78,7 @@ def home(request):
 
 
 
-				return HttpResponseRedirect(reverse('home:home'))
+				return HttpResponseRedirect(reverse('home:home', args=[latitude, longitude]))
 
 		queryse = Request.objects.filter(requestor=request.user).order_by('-id');
 		queryset = []
@@ -88,11 +91,15 @@ def home(request):
 
 		print("Queries: ", queryset)
 
-		return render(request, "home/index.html", {'latitude': latitude, 'longitude': longitude, 'queryset': queryset})
+		latitudeToPass = float(latitude);
+		longitudeToPass = float(longitude);
+
+
+		return render(request, "home/index.html", {'queryset': queryset, 'latitude':latitudeToPass, 'longitude':longitudeToPass})
 
 	return render(request, "home/index.html")
 
-def postForm(request):
+def postForm(request, latitude, longitude):
 	if request.user.is_authenticated:
 		if request.POST:
 			request_form = AddRequestForm(data=request.POST)
@@ -100,44 +107,42 @@ def postForm(request):
 				print("VALID REQUEST")
 				requestt = request_form.save(commit=False)
 				requestt.requestor = request.user
-				global user_location
-				if user_location:
-					requestt.location = user_location
+
+				requestt.location = Point(float(latitude), float(longitude), srid=4326)
+
 				requestt.timestamp_for_id = int(round(time.time() * 1000))
 				print("RECK: ", requestt)
+
 				requestt.save()
 
 
-				return HttpResponseRedirect(reverse('home:home'))
+				return HttpResponseRedirect(reverse('home:home', args=[latitude, longitude]))
 		else:
-			print("USAAR", user_location);
-			add_request_form=AddRequestForm();
-			return render(request, 'home/post_form.html', {'add_request_form':add_request_form})
-	else:
-		return HttpResponseRedirect(reverse('home:home'))
 
-def mainPage(request):
+
+			add_request_form=AddRequestForm();
+
+			return render(request, 'home/post_form.html', {'add_request_form':add_request_form, 'latitude':latitude, 'longitude':longitude})
+	else:
+		return HttpResponseRedirect(reverse('home:home', args=[latitude, longitude]))
+
+def mainPage(request, latitude, longitude):
+
 	if request.user.is_authenticated:
 		if request.POST:
 
 
-
 			if 'coordinatesSubmitted' in request.POST:
-				global latitude
-				latitude = float(request.POST['latitude'])
-				global longitude
-				longitude = float(request.POST['longitude'])
-				print('LATITUDE: {}, LONGITUDE: {}'.format(latitude, longitude))
-				global user_location
-				user_location = Point(longitude, latitude, srid=4326)
-				print(user_location)
-				return HttpResponseRedirect(reverse('home:main_page'))
+
+				newlatitude = float(request.POST['latitude'])
+
+				newlongitude = float(request.POST['longitude'])
+				print('LATITUDE: {}, LONGITUDE: {}'.format(newlatitude, newlongitude))
+				user_location = Point(newlongitude, newlatitude, srid=4326)
+
+				return HttpResponseRedirect(reverse('home:main_page', args=[newlatitude, newlongitude]))
 			elif 'refreshLocation' in request.POST:
-
-				longitude = 0
-
-				latitude = 0
-				return HttpResponseRedirect(reverse('home:main_page'))
+				return HttpResponseRedirect(reverse('home:main_page', args=[0.0, 0.0]))
 
 			elif 'postToLike' in request.POST:
 				postToLike = request.POST['postToLike'].split()
@@ -148,7 +153,10 @@ def mainPage(request):
 				else:
 					Request.objects.get(requestor__username=postToLike[0], timestamp_for_id=int(postToLike[1])).urgency_rating.add(request.user)
 
-				return HttpResponseRedirect(reverse('home:main_page'))
+				return HttpResponseRedirect(reverse('home:main_page', args=[float(latitude), float(longitude)]))
+
+
+		user_location = Point(float(latitude), float(longitude), srid=4326)
 
 		queryse = Request.objects.filter(location__distance_lte=(user_location, D(km=3))).annotate(distance=Distance('location',user_location), q_count=Count('urgency_rating')).filter(address_allowed=True).order_by('distance', '-q_count', '-id')
 
@@ -160,7 +168,10 @@ def mainPage(request):
 			else:
 				queryset.append(PostToPass(query, False))
 
-		return render(request, "home/main_page.html", {'queryset':queryset, 'latitude': latitude, 'longitude': longitude})
+		print('1 LATITUDE: {}, LONGITUDE: {}'.format(latitude, longitude))
+
+
+		return render(request, "home/main_page.html", {'queryset':queryset, 'latitude': float(latitude), 'longitude': float(longitude)})
 	else:
 		return HttpResponseRedirect(reverse('home:home'))
 
@@ -200,8 +211,6 @@ def openPost(request, post_requestor_name, post_timestamp):
 				return HttpResponseRedirect(url)
 
 
-
-
 		postToShow = Request.objects.get(requestor__username=post_requestor_name, timestamp_for_id=post_timestamp)
 
 		if postToShow.urgency_rating.filter(id=request.user.id).exists():
@@ -213,6 +222,7 @@ def openPost(request, post_requestor_name, post_timestamp):
 		comments = Comment.objects.filter(request=postToShow.request).order_by('-id')
 
 		print("POST TO SHOW: ", postToShow)
+
 
 		return render(request, "home/post_page.html", {'postToShow': postToShow, 'comments': comments, 'comment_form': comment_form})
 
