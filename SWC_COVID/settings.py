@@ -36,7 +36,7 @@ SECRET_KEY = '4m)5o&bzkhy_y^uu)&375_1f=i43lmn1loa2dej0(t)e6io32-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['swc.pythonanywhere.com']
+ALLOWED_HOSTS = ['swc.pythonanywhere.com', '127.0.0.1']
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'admin_panel',
     'crispy_forms',
     'mapwidgets',
+
 ]
 
 MIDDLEWARE = [
@@ -182,4 +183,3 @@ MAP_WIDGETS = {
     ),
     "GOOGLE_MAP_API_KEY": "AIzaSyB6usNdp_5I_E7i7cGhxKpxHIyEJiESmYo"
 }
-

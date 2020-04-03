@@ -92,7 +92,6 @@ def change_delta(request):
     req.save()
     return JsonResponse({'approved': 'True'})
 
-    return redirect('home:home')
 
 
 class NearbyForm(FormView):

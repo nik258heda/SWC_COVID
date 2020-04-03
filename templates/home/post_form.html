@@ -35,7 +35,7 @@ textarea{
     <div class="container vertical-center">
       <div style="padding:15px; width:100%;border:1px solid black;border-radius:0px;background:none" class="jumbotron">
 
-        <form action="{% url 'home:postForm' %}" method="post">
+        <form action="{% url 'home:postForm' latitude longitude %}" method="post">
           {% csrf_token %}
           {{ add_request_form|crispy }}
           <br>
