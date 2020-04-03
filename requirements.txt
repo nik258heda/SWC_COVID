@@ -1,2 +1,5 @@
+pip3 install django-crispy-forms
 pip3 install django-authy
 pip3 install djangorestframework-datatables
+pip3 install factory-boy
+pip3 install django-map-widgets
