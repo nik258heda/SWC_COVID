@@ -77,7 +77,7 @@ def home(request, latitude, longitude):
 
 				return HttpResponseRedirect(reverse('home:home', args=[float(latitude), float(longitude)]))
 
-			elif request.is_ajax() and request.POST['100']:
+			elif request.is_ajax() and request.POST['1']:
 				data = request.POST
 				req = Request.objects.get(requestor__username=data['0'], timestamp_for_id=int(data['1']))
 				if req.urgency_rating.filter(id=request.user.id).exists():
@@ -161,7 +161,16 @@ def mainPage(request, latitude, longitude):
 					Request.objects.get(requestor__username=postToLike[0], timestamp_for_id=int(postToLike[1])).urgency_rating.add(request.user)
 
 				return HttpResponseRedirect(reverse('home:main_page', args=[float(latitude), float(longitude)]))
-
+			elif request.is_ajax() and request.POST['1']:
+				data = request.POST
+				req = Request.objects.get(requestor__username=data['0'], timestamp_for_id=int(data['1']))
+				if req.urgency_rating.filter(id=request.user.id).exists():
+					Request.objects.get(requestor__username=data['0'],timestamp_for_id=int(data['1'])).urgency_rating.remove(request.user)
+				else:
+					Request.objects.get(requestor__username=data['0'],timestamp_for_id=int(data['1'])).urgency_rating.add(request.user)
+				return JsonResponse(data)
+			else:
+				return response
 
 		user_location = Point(float(longitude), float(latitude), srid=4326)
 
