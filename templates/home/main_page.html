@@ -179,7 +179,7 @@
       <br style="clear:both">
 
 
-      <form action="{% url 'home:home' latitude longitude %}" method="post" name="{{ post.request.requestor.username }}" id="{{ post.request.timestamp_for_id }}">
+      <form action="{% url 'home:main_page' latitude longitude %}" method="post" name="{{ post.request.requestor.username }}" id="{{ post.request.timestamp_for_id }}">
         {% csrf_token %}
         <button class="btn btn-primary" type="submit" name="postToLike" value="{{ post.request.requestor.username }} {{ post.request.timestamp_for_id }}" style="width:100%;">CHANGE URGENCY</button>
       </form>
