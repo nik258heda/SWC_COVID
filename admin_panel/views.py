@@ -115,6 +115,7 @@ class NearbyForm(FormView):
         radius = form.cleaned_data['radius']
         print(point, radius)
         queryset = models.Request.objects.filter(location__distance_lte=(point, Distance(km=radius)))
+        queryset=queryset.order_by('urgency_rating')
         context = self.get_context_data(**kwargs)
         context['requests'] = queryset
         return self.render_to_response(context)
