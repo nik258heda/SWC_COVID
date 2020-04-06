@@ -197,7 +197,7 @@
       <br style="clear:both">
 
 
-      <form action="{% url 'home:home' latitude longitude %}" method="post">
+      <form action="{% url 'home:home' latitude longitude %}" method="post" name="{{ post.request.requestor.username }}" id="{{ post.request.timestamp_for_id }}">
         {% csrf_token %}
         <button class="btn btn-primary" type="submit" name="postToLike" value="{{ post.request.requestor.username }} {{ post.request.timestamp_for_id }}" style="width:100%;">CHANGE URGENCY</button>
       </form>
@@ -237,7 +237,7 @@ $(document).ready(function(){
     e.preventDefault();
     method = 'POST'
     url = $(this).attr('action');
-    data= {0:$(this).attr('name') , 1: $(this).attr('id'), 2: "{{ post.liked }}"};
+    data= {0:$(this).attr('name') , 1: $(this).attr('id'), 100: "{{ post.liked }}"};
     $.post(url, data, function(response){
           console.log(data);
           $('#urgency_{{ post.request.timestamp_for_id }}').load(document.URL +  ' #urgency_{{ post.request.timestamp_for_id }}');

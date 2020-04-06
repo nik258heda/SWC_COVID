@@ -23,7 +23,7 @@ import os
 #    os.environ['PATH'] = OSGEO4W + r"\bin;" + os.environ['PATH']
 #GEOTH_LIBRARY_PATH = 'C:\\OSGeo4W64\\bin'
 #GDAL_LIBRARY_PATH = 'C:\\OSGeo4W64\\bin\\gdal300.dll'
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+#Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
