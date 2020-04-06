@@ -88,7 +88,9 @@
         <ul class="nav navbar-nav">
           <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-brand" href="{% url 'home:home' latitude longitude %}">Your Requests</a></li>
           <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'home:main_page' latitude longitude %}">Nearby Requests</a></li>
+          <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'home:contact_us_page' %}">Contact Us!</a></li>
           <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'auths:logout' %}">Logout</a></li>
+
           {% if request.user.is_superuser %}
               <li class="nav-item"><a class="nav-link" style="color:white" onMouseOver="this.style.color='green'" onMouseOut="this.style.color='white'" class="navbar-link" href="{% url 'admin_panel:requests' %}">Admin</a></li>
           {% endif %}
@@ -110,7 +112,7 @@
 
     <p id = "status"></p>
 
-    <h1>Dashboard</h1>
+    <h1>{{ user.username }}</h1>
 
     <a style="display:none" id = "map-link" target="_blank"></a>
     <form style="display:none" action="{% url 'home:home' latitude longitude %}" method="post">
@@ -120,17 +122,21 @@
       <input id="latLonSubmit" type="submit" name="coordinatesSubmitted" value="">
     </form>
 
-      <p>Logged as {{ user.username }}</p>
+
 
       &nbsp;
       {% if not user.profile %}
       <a class="btn btn-primary" href="{% url 'auths:phoneVerification' %}">Add Phone Number</a>
       {% endif %}
       <br> <br>
+      {% if phoneNumberExists %}
       {% if latitude != 0 or longitude != 0  %}
       <a class="btn btn-primary" href="{% url 'home:postForm' latitude longitude %}">Add Request</a>
       {% else %}
       <p>Your current location has not been calculated yet. Please wait for it in order to post.</p>
+      {% endif %}
+      {% else %}
+      <p>Please enter your phone number in order to make a request.</p>
       {% endif %}
       <br><br>
       <form class="" action="{% url 'home:home' latitude longitude %}" method="post">

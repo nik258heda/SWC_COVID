@@ -17,7 +17,7 @@ from admin_panel.models import Request, Category, Comment
 from .forms import AddRequestForm, CommentForm
 import time
 from django.db.models import Count
-
+from auths.models import Profile
 
 
 
@@ -99,11 +99,16 @@ def home(request, latitude, longitude):
 
 		print("Queries: ", queryset)
 
+		phoneNumberExists=False
+		if Profile.objects.filter(user=request.user).exists():
+			phoneNumberExists = True
+
+
 		latitudeToPass = float(latitude);
 		longitudeToPass = float(longitude);
 
 
-		return render(request, "home/index.html", {'queryset': queryset, 'latitude':latitudeToPass, 'longitude':longitudeToPass})
+		return render(request, "home/index.html", {'queryset': queryset, 'latitude':latitudeToPass, 'longitude':longitudeToPass, 'phoneNumberExists': phoneNumberExists})
 
 	return render(request, "home/index.html")
 
@@ -124,7 +129,12 @@ def postForm(request, latitude, longitude):
 		else:
 
 			add_request_form=AddRequestForm();
-			return render(request, 'home/post_form.html', {'add_request_form':add_request_form, 'latitude':latitude, 'longitude':longitude})
+			phoneNumberExists = False
+			if Profile.objects.filter(user=request.user).exists():
+				phoneNumberExists = True
+
+
+			return render(request, 'home/post_form.html', {'add_request_form':add_request_form, 'latitude':latitude, 'longitude':longitude, 'phoneNumberExists': phoneNumberExists})
 	else:
 		return HttpResponseRedirect(reverse('home:home', args=[float(latitude), float(longitude)]))
 
@@ -240,3 +250,11 @@ def openPost(request, post_requestor_name, post_timestamp, latitude, longitude):
 
 	else:
 		return HttpResponseRedirect(reverse('home:home', args=[0,0]))
+
+
+
+def contactUs(request):
+	if request.user.is_authenticated:
+		return render(request, "home/contact_us.html")
+	else:
+		return HttpResponseRedirect(reverse("home:home"));

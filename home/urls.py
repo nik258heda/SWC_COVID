@@ -10,4 +10,6 @@ urlpatterns = [
     path('post_form/<latitude>_<longitude>', views.postForm, name='postForm'),
     path('main_page/<latitude>_<longitude>', views.mainPage, name="main_page"),
     path('open_post/<post_requestor_name>_<post_timestamp>_<latitude>_<longitude>', views.openPost, name="open_post"),
+    path('contact_us', views.contactUs, name="contact_us_page"),
+
 ]
