@@ -39,19 +39,23 @@ def phoneVerificationView(request):
             if form.is_valid():
                 request.session['phone_number'] = form.cleaned_data['phone_number']
                 request.session['country_code'] = form.cleaned_data['country_code']
+                conti = True
                 if Profile.objects.filter(phone=form.cleaned_data['phone_number'], country_code=form.cleaned_data['country_code']).exists():
-                    raise ValidationError("Phone Number already exists")
-                authy_api.phones.verification_start(
-                    form.cleaned_data['phone_number'],
-                    form.cleaned_data['country_code'],
-                    via='sms'
-                )
-                return redirect('auths:tokenValidation')
+                    form.add_error(None, "Phone Number already exists")
+                    conti = False;
+
+                if conti:
+                    authy_api.phones.verification_start(
+                        form.cleaned_data['phone_number'],
+                        form.cleaned_data['country_code'],
+                        via='sms'
+                    )
+                    return redirect('auths:tokenValidation')
 
 
         else:
             form = PhoneVerificationForm()
-            return render(request, 'auths/phoneVerification.html', {'form': form})
+        return render(request, 'auths/phoneVerification.html', {'form': form})
 
     return redirect('home:ezhome')
 

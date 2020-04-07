@@ -4,6 +4,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from auths.models import Profile
 import phonenumbers
+from django.contrib import messages
+
 
 class SignUpForm(UserCreationForm):
 	first_name = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={'placeholder': 'First Name'}))
