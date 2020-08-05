@@ -126,15 +126,12 @@
       <a class="btn btn-primary" href="{% url 'auths:phoneVerification' %}">Add Phone Number</a>
       {% endif %}
       <br> <br>
-      {% if phoneNumberExists %}
       {% if latitude != 0 or longitude != 0  %}
       <a class="btn btn-primary" href="{% url 'home:postForm' latitude longitude %}">Add Request</a>
       {% else %}
       <p>Your current location has not been calculated yet. Nearby posts will only show up once your current location is loaded.</p>
       {% endif %}
-      {% else %}
-      <p>Please enter your phone number in order to make a request.</p>
-      {% endif %}
+
 
       <br><br>
       <form class="" action="{% url 'home:main_page' latitude longitude %}" method="post">
