@@ -184,7 +184,7 @@ def mainPage(request, latitude, longitude):
 
 		user_location = Point(float(longitude), float(latitude), srid=4326)
 
-		queryse = Request.objects.filter(location__distance_lte=(user_location, D(km=3))).annotate(distance=Distance('location',user_location), q_count=Count('urgency_rating')).filter(address_allowed=True).order_by('distance', '-q_count', '-id')
+		queryse = Request.objects.filter(location__distance_lte=(user_location, D(km=5))).annotate(distance=Distance('location',user_location), q_count=Count('urgency_rating')).filter(address_allowed=True).order_by('distance', '-q_count', '-id')
 
 		queryset=[]
 
